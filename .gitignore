@@ -1,0 +1,19 @@
+# Ignore everything by default (root-anchored, top-level only)
+/*
+
+# Explicitly un-ignore only what belongs in this repo
+!/school-management-system/
+!/EducationAI/
+!/.gitmodules
+!/start.sh
+!/build.sh
+!/wsgi_gateway.py
+!/requirements.txt
+!/.gitignore
+
+# Within the two allowed project folders, still exclude venvs and
+# node_modules anywhere inside their tree
+school-management-system/.venv/
+school-management-system/**/node_modules/
+EducationAI/.venv/
+EducationAI/**/node_modules/

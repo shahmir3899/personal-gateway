@@ -1,0 +1,7 @@
+# Dependencies for wsgi_gateway.py ONLY (the Werkzeug dispatch/proxy in front
+# of the two backends). Each backend keeps installing from its own
+# requirements.txt in its own venv — this file must never be merged with
+# school-management-system/backend/requirements.txt or
+# EducationAI/backend/requirements.txt.
+werkzeug==3.1.8
+gunicorn==23.0.0

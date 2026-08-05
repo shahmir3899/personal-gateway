@@ -1,0 +1,6 @@
+[submodule "school-management-system"]
+	path = school-management-system
+	url = https://github.com/shahmir3899/koderkids_erp
+[submodule "EducationAI"]
+	path = EducationAI
+	url = https://github.com/shahmir3899/kodereduai.git
