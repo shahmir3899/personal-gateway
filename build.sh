@@ -42,6 +42,17 @@ build_venv "educationai" \
     "$ROOT_DIR/EducationAI/.venv" \
     "$ROOT_DIR/EducationAI/backend/requirements.txt"
 
+# face_recognition is intentionally left out of requirements.txt: its metadata
+# declares a dependency on "dlib" (by that exact name) with no prebuilt wheels
+# on PyPI, which OOMs the build compiling it from source. dlib-bin (already
+# installed above, from requirements.txt) provides a working `import dlib` at
+# runtime, but pip won't credit it toward face_recognition's own dlib>=19.7
+# requirement — so install face_recognition with --no-deps here, now that
+# dlib-bin and its other real dependency (face-recognition-models) are already
+# in place, to avoid pip re-triggering a source dlib build.
+echo "==> [educationai] Installing face_recognition (--no-deps, dlib-bin already covers its dlib requirement)..."
+"$ROOT_DIR/EducationAI/.venv/bin/pip" install --no-deps face_recognition==1.3.0
+
 build_venv "gateway" \
     "$ROOT_DIR/.venv" \
     "$ROOT_DIR/requirements.txt"
