@@ -16,6 +16,8 @@ set -uo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+GUNICORN_TIMEOUT="${GUNICORN_TIMEOUT:-120}"
+
 KODERKIDS_DIR="$ROOT_DIR/school-management-system/backend"
 KODERKIDS_VENV_GUNICORN="$ROOT_DIR/school-management-system/.venv/bin/gunicorn"
 
@@ -43,6 +45,7 @@ echo "==> Starting koderkids (school-management-system) on 127.0.0.1:8001..."
 "$KODERKIDS_VENV_GUNICORN" school_management.wsgi:application \
     --chdir "$KODERKIDS_DIR" \
     --bind 127.0.0.1:8001 \
+    --timeout "$GUNICORN_TIMEOUT" \
     --workers 2 &
 PIDS+=("$!")
 
@@ -50,6 +53,7 @@ echo "==> Starting educationai (EducationAI) on 127.0.0.1:8002..."
 "$EDUCATIONAI_VENV_GUNICORN" config.wsgi:application \
     --chdir "$EDUCATIONAI_DIR" \
     --bind 127.0.0.1:8002 \
+    --timeout "$GUNICORN_TIMEOUT" \
     --workers 2 &
 PIDS+=("$!")
 
@@ -57,6 +61,7 @@ echo "==> Starting gateway (wsgi_gateway.py) in foreground on 0.0.0.0:${PORT:-80
 "$GATEWAY_VENV_GUNICORN" wsgi_gateway:application \
     --chdir "$ROOT_DIR" \
     --bind "0.0.0.0:${PORT:-8000}" \
+    --timeout "$GUNICORN_TIMEOUT" \
     --workers 2 &
 PIDS+=("$!")
 
