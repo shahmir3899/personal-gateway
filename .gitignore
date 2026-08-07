@@ -10,6 +10,7 @@
 !/wsgi_gateway.py
 !/requirements.txt
 !/.gitignore
+!/push-all.bat
 
 # Within the two allowed project folders, still exclude venvs and
 # node_modules anywhere inside their tree
