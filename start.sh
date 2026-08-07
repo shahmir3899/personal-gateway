@@ -42,6 +42,12 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "==> Starting koderkids (school-management-system) on 127.0.0.1:8001..."
+if [ -z "${KODERKIDS_DATABASE_URL:-}" ]; then
+    echo "==> ERROR: KODERKIDS_DATABASE_URL is not set. Refusing to start koderkids"
+    echo "    against the shared DATABASE_URL (that would collide with educationai)."
+    exit 1
+fi
+DATABASE_URL="$KODERKIDS_DATABASE_URL" \
 "$KODERKIDS_VENV_GUNICORN" school_management.wsgi:application \
     --chdir "$KODERKIDS_DIR" \
     --bind 127.0.0.1:8001 \
