@@ -1,82 +1,47 @@
 @echo off
-REM push-all.bat - Production push: submodules first, then parent repo.
-REM Usage: push-all.bat "commit message"
 setlocal enabledelayedexpansion
 
-set "ROOT=%~dp0"
-set "MSG=%~1"
-if "%MSG%"=="" set "MSG=Production update %date% %time%"
-
-echo ============================================
-echo  Push All - Production Mode
-echo  Commit message: %MSG%
-echo ============================================
-
-REM ---------- Step 1: EducationAI submodule ----------
-echo.
-echo [1/3] EducationAI
-cd /d "%ROOT%EducationAI"
-git add -A
-git diff --cached --quiet
-if errorlevel 1 (
-    git commit -m "%MSG%"
-    if errorlevel 1 (
-        echo ERROR: commit failed in EducationAI
-        exit /b 1
-    )
+echo ===============================
+echo   Push EducationAI
+echo ===============================
+cd EducationAI
+git add .
+set /p msg1="Enter commit message for EducationAI (leave blank to skip): "
+if not "!msg1!"=="" (
+    git commit -m "!msg1!"
+    git push
 ) else (
-    echo No changes to commit in EducationAI.
+    echo Skipped EducationAI commit.
 )
-git push origin main
-if errorlevel 1 (
-    echo ERROR: push failed in EducationAI
-    exit /b 1
-)
+cd ..
 
-REM ---------- Step 2: school-management-system submodule ----------
-echo.
-echo [2/3] school-management-system
-cd /d "%ROOT%school-management-system"
-git add -A
-git diff --cached --quiet
-if errorlevel 1 (
-    git commit -m "%MSG%"
-    if errorlevel 1 (
-        echo ERROR: commit failed in school-management-system
-        exit /b 1
-    )
+echo ===============================
+echo   Push school-management-system
+echo ===============================
+cd school-management-system
+git add .
+set /p msg2="Enter commit message for school-management-system (leave blank to skip): "
+if not "!msg2!"=="" (
+    git commit -m "!msg2!"
+    git push
 ) else (
-    echo No changes to commit in school-management-system.
+    echo Skipped school-management-system commit.
 )
-git push origin main
-if errorlevel 1 (
-    echo ERROR: push failed in school-management-system
-    exit /b 1
-)
+cd ..
 
-REM ---------- Step 3: parent repo (personal) ----------
-echo.
-echo [3/3] personal (parent repo)
-cd /d "%ROOT%"
-git add EducationAI school-management-system
-git diff --cached --quiet
-if errorlevel 1 (
-    git commit -m "Update submodule pointers: %MSG%"
-    if errorlevel 1 (
-        echo ERROR: commit failed in personal
-        exit /b 1
-    )
+echo ===============================
+echo   Push main repo (personal)
+echo ===============================
+git add .
+set /p msg3="Enter commit message for main repo (leave blank to skip): "
+if not "!msg3!"=="" (
+    git commit -m "!msg3!"
+    git push
 ) else (
-    echo No submodule pointer changes to commit in personal.
-)
-git push origin main
-if errorlevel 1 (
-    echo ERROR: push failed in personal
-    exit /b 1
+    echo Skipped main repo commit.
 )
 
-echo.
-echo ============================================
-echo  All repos pushed successfully.
-echo ============================================
-endlocal
+echo ===============================
+echo   Done.
+echo ===============================
+pause
