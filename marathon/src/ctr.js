@@ -35,7 +35,7 @@
       var viewModel = CtrModel.computeProgress(data.marathons, data.memberProgress);
       CtrView.renderStatus(rootEl, 'Loaded: ' + (viewModel.displayName || config.memberId) +
         ' — ' + viewModel.totalVerifiedReferrals + ' referrals');
-      // Trophy/nameplate rendering into .ctr-case-trophies lands in Phase 1-3.
+      CtrView.renderMarathon(rootEl, viewModel, viewModel.currentMarathonId, config);
       console.log('[CaptainsTrophyRoom] view-model', viewModel);
     }).catch(function (err) {
       console.error('[CaptainsTrophyRoom] failed to load data', err);

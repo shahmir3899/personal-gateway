@@ -16,7 +16,10 @@
 
     function goTo(index) {
       activeIndex = Math.max(0, Math.min(caseCount - 1, index));
-      track.style.transform = 'translateX(-' + (activeIndex * 100) + '%)';
+      // translateX(%) is relative to the TRACK's own width (caseCount * 100%),
+      // not one case's width — so the shift per step is 100/caseCount percent,
+      // not 100 percent.
+      track.style.transform = 'translateX(-' + (activeIndex * (100 / caseCount)) + '%)';
       dots.forEach(function (dot, i) {
         dot.classList.toggle('ctr-dot--active', i === activeIndex);
       });
