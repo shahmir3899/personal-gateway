@@ -1,10 +1,12 @@
 /**
  * Captain's Trophy Room — DOM rendering.
  * Phase 0: empty cabin background + 3-case skeleton shell.
- * Phase 1 (current): render the current marathon's trophies into each case —
- * layered shadow/art/lighting/glass/lock, plus a real-HTML nameplate — driven
- * entirely by the CtrModel view-model. Zoom/presentation view and marathon
- * switching (revisiting past marathons) land in later phases.
+ * Phase 1: render the current marathon's trophies into each case — layered
+ * shadow/art/lighting/glass/lock, plus a real-HTML nameplate — driven
+ * entirely by the CtrModel view-model.
+ * Phase 2 (current): click-to-zoom presentation overlay (wired from
+ * ctr-zoom.js, which reuses buildTrophyMarkup below at a larger size).
+ * Marathon switching (revisiting past marathons) lands in a later phase.
  */
 (function (global) {
   'use strict';
@@ -30,6 +32,10 @@
           '<button type="button" class="ctr-nav-btn ctr-nav-next" aria-label="Next case">&#8250;</button>' +
         '</div>' +
         '<div class="ctr-status"></div>' +
+        '<div class="ctr-zoom-overlay" tabindex="-1" hidden>' +
+          '<button type="button" class="ctr-zoom-close" aria-label="Close">&times;</button>' +
+          '<div class="ctr-zoom-body"></div>' +
+        '</div>' +
       '</div>';
   }
 
@@ -63,20 +69,25 @@
         return a.tierOrder - b.tierOrder;
       });
       container.innerHTML = trophies.map(function (t) {
-        return renderTrophy(t, viewModel, config, marathon.id);
+        return buildTrophyMarkup(t, viewModel, config, marathon.id);
       }).join('');
     });
 
     wireArtworkFallback(rootEl);
   }
 
-  function renderTrophy(trophy, viewModel, config, marathonId) {
+  /**
+   * Builds one trophy's full markup (layered visual + nameplate). Used both
+   * for the in-case trophies and — at a larger size via sizeClass — for the
+   * zoom presentation view, so the two never drift out of sync.
+   */
+  function buildTrophyMarkup(trophy, viewModel, config, marathonId, sizeClass) {
     var lockedClass = trophy.isUnlocked ? 'ctr-trophy--unlocked' : 'ctr-trophy--locked';
     var artFolder = 'marathon-' + String(marathonId || '').replace(/^m/, '');
     var artSrc = config.assetsBase + 'trophies/' + artFolder + '/' + trophy.imageKey + '.png';
 
     return (
-      '<div class="ctr-trophy ' + lockedClass + '" data-trophy-id="' + trophy.id + '">' +
+      '<div class="ctr-trophy ' + lockedClass + (sizeClass ? ' ' + sizeClass : '') + '" data-trophy-id="' + trophy.id + '">' +
         '<div class="ctr-trophy-case-visual">' +
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
@@ -109,9 +120,10 @@
   }
 
   // Real trophy art may 404 (not supplied yet, or wrong imageKey) — swap to
-  // the text fallback instead of showing a broken-image icon.
-  function wireArtworkFallback(rootEl) {
-    rootEl.querySelectorAll('.ctr-trophy-art').forEach(function (img) {
+  // the text fallback instead of showing a broken-image icon. Scoped to a
+  // container so it can be reapplied to freshly-inserted zoom markup too.
+  function wireArtworkFallback(container) {
+    container.querySelectorAll('.ctr-trophy-art').forEach(function (img) {
       img.addEventListener('error', function () {
         img.hidden = true;
         var fallback = img.nextElementSibling;
@@ -148,6 +160,8 @@
   global.CtrView = {
     renderShell: renderShell,
     renderMarathon: renderMarathon,
-    renderStatus: renderStatus
+    renderStatus: renderStatus,
+    buildTrophyMarkup: buildTrophyMarkup,
+    wireArtworkFallback: wireArtworkFallback
   };
 })(window);

@@ -261,6 +261,73 @@
   opacity: 0.6;
 }
 
+.ctr-trophy[role="button"] {
+  cursor: pointer;
+}
+
+.ctr-trophy[role="button"]:focus-visible {
+  outline: 2px solid var(--ctr-gold-bright);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.ctr-zoom-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  outline: none;
+}
+
+/* `display: flex` above has the same specificity as the UA stylesheet's
+   `[hidden] { display: none }` and comes later, so it would otherwise win
+   and leave the overlay covering (and click-catching over) the whole room
+   even while "hidden". This rule restores hidden's effect. */
+.ctr-zoom-overlay[hidden] {
+  display: none;
+}
+
+.ctr-zoom-body {
+  width: min(70%, 320px);
+}
+
+.ctr-zoom-body .ctr-trophy--zoomed {
+  max-width: none;
+  width: 100%;
+}
+
+.ctr-zoom-body .ctr-trophy-case-visual {
+  margin-bottom: 4%;
+}
+
+.ctr-zoom-body .ctr-nameplate {
+  font-size: clamp(0.85rem, 2.4vw, 1.1rem);
+  padding: 5% 4%;
+}
+
+.ctr-zoom-close {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  z-index: 21;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--ctr-gold);
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--ctr-gold-bright);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ctr-zoom-close:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
 /* Responsive: tablet/phone just shrink padding/nav, layout stays flex-based */
 @media (max-width: 640px) {
   .ctr-nav-btn {

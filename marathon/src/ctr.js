@@ -23,6 +23,7 @@
 
     CtrView.renderShell(rootEl, config);
     var carousel = CtrCarousel.attach(rootEl);
+    var zoom = CtrZoom.attachOverlay(rootEl);
 
     if (!config.memberId) {
       CtrView.renderStatus(rootEl, 'No member context provided — pass memberId or ?member_id= in the URL.');
@@ -36,13 +37,14 @@
       CtrView.renderStatus(rootEl, 'Loaded: ' + (viewModel.displayName || config.memberId) +
         ' — ' + viewModel.totalVerifiedReferrals + ' referrals');
       CtrView.renderMarathon(rootEl, viewModel, viewModel.currentMarathonId, config);
+      CtrZoom.wireTrophyClicks(rootEl, viewModel, viewModel.currentMarathonId, config, zoom);
       console.log('[CaptainsTrophyRoom] view-model', viewModel);
     }).catch(function (err) {
       console.error('[CaptainsTrophyRoom] failed to load data', err);
       CtrView.renderStatus(rootEl, 'Failed to load trophy data.');
     });
 
-    return { rootEl: rootEl, config: config, carousel: carousel };
+    return { rootEl: rootEl, config: config, carousel: carousel, zoom: zoom };
   }
 
   function resolveConfig(userConfig) {
