@@ -36,15 +36,16 @@
       var viewModel = CtrModel.computeProgress(data.marathons, data.memberProgress);
       CtrView.renderStatus(rootEl, 'Loaded: ' + (viewModel.displayName || config.memberId) +
         ' — ' + viewModel.totalVerifiedReferrals + ' referrals');
-      CtrView.renderMarathon(rootEl, viewModel, viewModel.currentMarathonId, config);
-      CtrZoom.wireTrophyClicks(rootEl, viewModel, viewModel.currentMarathonId, config, zoom);
+      var marathonNav = CtrMarathonNav.attach(rootEl, viewModel, config, { carousel: carousel, zoom: zoom });
       console.log('[CaptainsTrophyRoom] view-model', viewModel);
+      widgetInstance.marathonNav = marathonNav;
     }).catch(function (err) {
       console.error('[CaptainsTrophyRoom] failed to load data', err);
       CtrView.renderStatus(rootEl, 'Failed to load trophy data.');
     });
 
-    return { rootEl: rootEl, config: config, carousel: carousel, zoom: zoom };
+    var widgetInstance = { rootEl: rootEl, config: config, carousel: carousel, zoom: zoom };
+    return widgetInstance;
   }
 
   function resolveConfig(userConfig) {

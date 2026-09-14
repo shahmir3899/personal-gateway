@@ -57,6 +57,17 @@
 
       var marathonComplete = trophies.length > 0 && trophies.every(function (t) { return t.isUnlocked; });
 
+      // How many (cumulative) referrals are needed to unlock this marathon —
+      // the highest requiredReferrals among the PREVIOUS marathon's trophies.
+      // null for the first marathon, which is always accessible.
+      var unlockRequiredReferrals = null;
+      if (idx > 0) {
+        var prevTrophies = marathonResults[idx - 1].trophies;
+        unlockRequiredReferrals = prevTrophies.reduce(function (max, t) {
+          return Math.max(max, t.requiredReferrals);
+        }, 0);
+      }
+
       marathonResults.push({
         id: marathon.id,
         name: marathon.name,
@@ -64,6 +75,7 @@
         requiredReferrals: marathon.requiredReferrals,
         isAccessible: isAccessible,
         isComplete: marathonComplete,
+        unlockRequiredReferrals: unlockRequiredReferrals,
         trophies: trophies
       });
 
