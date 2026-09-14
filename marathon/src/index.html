@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Captain's Trophy Room — Dev Harness</title>
+  <style>
+    body { background: #1b1b1b; color: #eee; font-family: sans-serif; padding: 24px; }
+    h1 { font-size: 1.1rem; font-weight: normal; opacity: 0.8; }
+    .harness-controls { margin-bottom: 16px; font-size: 0.85rem; }
+    .harness-controls a { color: #ecd08a; margin-right: 12px; }
+  </style>
+  <link rel="stylesheet" href="ctr.css" />
+</head>
+<body>
+  <h1>Captain's Trophy Room — dev harness (not the production embed)</h1>
+  <div class="harness-controls">
+    Try a mock member:
+    <a href="?member_id=101">101 (no progress)</a>
+    <a href="?member_id=102">102 (partway through Marathon 1)</a>
+    <a href="?member_id=103">103 (into Marathon 2)</a>
+  </div>
+
+  <div id="trophy-room-widget" data-ctr-widget></div>
+
+  <script src="ctr-model.js"></script>
+  <script src="ctr-view.js"></script>
+  <script src="ctr-carousel.js"></script>
+  <script src="ctr.js"></script>
+  <script>
+    CaptainsTrophyRoom.init({
+      mountEl: '#trophy-room-widget',
+      dataSource: 'mock',
+      assetsBase: '../assets/',
+      dataBase: '../data/'
+    });
+  </script>
+</body>
+</html>

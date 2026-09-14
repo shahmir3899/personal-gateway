@@ -1,0 +1,138 @@
+/* Captain's Trophy Room — all rules scoped under .ctr-widget so embedding
+   into a WordPress theme can't leak out or get clobbered by theme resets. */
+
+.ctr-widget,
+.ctr-widget * {
+  box-sizing: border-box;
+}
+
+.ctr-widget {
+  --ctr-gold: #c9a24b;
+  --ctr-gold-bright: #ecd08a;
+  --ctr-wood-dark: #2a1a10;
+  --ctr-wood-mid: #4a2f1c;
+  --ctr-glass-tint: rgba(255, 255, 255, 0.08);
+
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--ctr-gold-bright);
+  line-height: 1.4;
+}
+
+.ctr-room {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--ctr-wood-dark);
+  background-size: cover;
+  background-position: center;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.ctr-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ctr-track {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.ctr-case {
+  position: relative;
+  width: 33.3333%;
+  height: 100%;
+  flex: 0 0 33.3333%;
+  padding: 5% 4%;
+}
+
+.ctr-case-label {
+  position: absolute;
+  top: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(0.75rem, 2vw, 1.1rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ctr-gold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.ctr-case-trophies {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ctr-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.ctr-nav-btn {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--ctr-gold);
+  color: var(--ctr-gold-bright);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ctr-nav-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ctr-nav-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.ctr-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--ctr-gold);
+  cursor: pointer;
+}
+
+.ctr-dot--active {
+  background: var(--ctr-gold-bright);
+}
+
+.ctr-status {
+  position: absolute;
+  top: 4%;
+  left: 4%;
+  font-size: 0.8rem;
+  color: var(--ctr-gold);
+  opacity: 0.8;
+}
+
+/* Responsive: tablet/phone just shrink padding/nav, layout stays flex-based */
+@media (max-width: 640px) {
+  .ctr-nav-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1.1rem;
+  }
+}

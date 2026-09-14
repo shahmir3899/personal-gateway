@@ -1,0 +1,40 @@
+{
+  "marathons": [
+    {
+      "id": "m1",
+      "name": "Marathon 1",
+      "sequenceOrder": 1,
+      "requiredReferrals": 42,
+      "trophies": [
+        { "id": "m1-founding-runner", "name": "Founding Runner", "tierOrder": 1, "caseNumber": 1, "requiredReferrals": 1,  "imageKey": "founding-runner" },
+        { "id": "m1-5k",              "name": "5K",              "tierOrder": 2, "caseNumber": 1, "requiredReferrals": 5,  "imageKey": "5k" },
+        { "id": "m1-10k",             "name": "10K",             "tierOrder": 3, "caseNumber": 1, "requiredReferrals": 10, "imageKey": "10k" },
+        { "id": "m1-15k",             "name": "15K",             "tierOrder": 4, "caseNumber": 1, "requiredReferrals": 15, "imageKey": "15k" },
+        { "id": "m1-20k",             "name": "20K",             "tierOrder": 5, "caseNumber": 1, "requiredReferrals": 20, "imageKey": "20k" },
+        { "id": "m1-half",            "name": "Half Marathon",   "tierOrder": 6, "caseNumber": 2, "requiredReferrals": 21, "imageKey": "half-marathon" },
+        { "id": "m1-25k",             "name": "25K",             "tierOrder": 7, "caseNumber": 2, "requiredReferrals": 25, "imageKey": "25k" },
+        { "id": "m1-30k",             "name": "30K",             "tierOrder": 8, "caseNumber": 2, "requiredReferrals": 30, "imageKey": "30k" },
+        { "id": "m1-35k",             "name": "35K",             "tierOrder": 9, "caseNumber": 2, "requiredReferrals": 35, "imageKey": "35k" },
+        { "id": "m1-full",            "name": "Full Marathon 42.2K", "tierOrder": 10, "caseNumber": 3, "requiredReferrals": 42, "imageKey": "full-marathon" }
+      ]
+    },
+    {
+      "id": "m2",
+      "name": "Marathon 2",
+      "sequenceOrder": 2,
+      "requiredReferrals": 42,
+      "trophies": [
+        { "id": "m2-founding-runner", "name": "Founding Runner", "tierOrder": 1, "caseNumber": 1, "requiredReferrals": 43, "imageKey": "founding-runner" },
+        { "id": "m2-5k",              "name": "5K",              "tierOrder": 2, "caseNumber": 1, "requiredReferrals": 47, "imageKey": "5k" },
+        { "id": "m2-10k",             "name": "10K",             "tierOrder": 3, "caseNumber": 1, "requiredReferrals": 52, "imageKey": "10k" },
+        { "id": "m2-15k",             "name": "15K",             "tierOrder": 4, "caseNumber": 1, "requiredReferrals": 57, "imageKey": "15k" },
+        { "id": "m2-20k",             "name": "20K",             "tierOrder": 5, "caseNumber": 1, "requiredReferrals": 62, "imageKey": "20k" },
+        { "id": "m2-half",            "name": "Half Marathon",   "tierOrder": 6, "caseNumber": 2, "requiredReferrals": 63, "imageKey": "half-marathon" },
+        { "id": "m2-25k",             "name": "25K",             "tierOrder": 7, "caseNumber": 2, "requiredReferrals": 67, "imageKey": "25k" },
+        { "id": "m2-30k",             "name": "30K",             "tierOrder": 8, "caseNumber": 2, "requiredReferrals": 72, "imageKey": "30k" },
+        { "id": "m2-35k",             "name": "35K",             "tierOrder": 9, "caseNumber": 2, "requiredReferrals": 77, "imageKey": "35k" },
+        { "id": "m2-full",            "name": "Full Marathon 42.2K", "tierOrder": 10, "caseNumber": 3, "requiredReferrals": 84, "imageKey": "full-marathon" }
+      ]
+    }
+  ]
+}

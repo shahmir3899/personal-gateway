@@ -4,6 +4,7 @@
 # Explicitly un-ignore only what belongs in this repo
 !/school-management-system/
 !/EducationAI/
+!/marathon/
 !/.gitmodules
 !/start.sh
 !/build.sh
@@ -18,3 +19,4 @@ school-management-system/.venv/
 school-management-system/**/node_modules/
 EducationAI/.venv/
 EducationAI/**/node_modules/
+marathon/node_modules/
