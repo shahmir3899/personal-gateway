@@ -219,15 +219,10 @@
 }
 
 .ctr-case-trophies {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  justify-content: safe center;
-  gap: 3%;
+  position: relative;
+  width: 100%;
   height: 100%;
-  padding: 8% 6%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: visible;
 }
 
 .ctr-teaser {
@@ -267,22 +262,27 @@
   color: var(--ctr-gold);
 }
 
+/* Trophies are pinned to their photo-calibrated bay (ctr-layout.js sets
+   left/bottom/width inline, computed from the actual shelf-ledge and bay
+   pixel positions measured in cabin.jpg). .ctr-trophy itself is a
+   zero-height anchor at the shelf line: the visual sits above it
+   (bottom: 0, growing up) and the nameplate sits just below it (top: 0,
+   growing down) — that's what makes the trophy base land exactly on the
+   photographed shelf instead of floating in generic flex-centered space. */
 .ctr-trophy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  /* Fixed basis, no shrink: below this width trophies scroll horizontally
-     instead of shrinking into illegible thumbnails (see overflow-x on
-     .ctr-case-trophies). Capped at 140px (not wider) to leave headroom
-     for the nameplate below within the room's aspect-ratio height. */
-  flex: 0 0 clamp(76px, 22vw, 140px);
+  position: absolute;
+  left: 50%;
+  bottom: 20%;
+  width: 10%;
+  transform: translateX(-50%);
 }
 
 .ctr-trophy-case-visual {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   aspect-ratio: 1 / 1;
-  margin-bottom: 6%;
 }
 
 .ctr-trophy-shadow {
@@ -369,13 +369,21 @@
 }
 
 .ctr-nameplate {
-  width: 92%;
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  /* Capped at ~112% of the trophy's own width (not wider) — the bays in
+     the photo are only ~12.8% of the room's width apart at their
+     closest, and a wider plaque overlaps its neighbor's. */
+  width: 112%;
   text-align: center;
   background: linear-gradient(180deg, var(--ctr-wood-mid), var(--ctr-wood-dark));
   border: 1px solid var(--ctr-gold);
   border-radius: 3px;
-  padding: 4% 3%;
-  font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+  padding: 5% 4%;
+  font-size: clamp(0.42rem, 1.05vw, 0.62rem);
+  line-height: 1.3;
 }
 
 .ctr-nameplate-title {
@@ -433,16 +441,38 @@
   width: min(70%, 320px);
 }
 
+/* The zoomed trophy reuses the exact same markup as an in-case trophy
+   (see buildTrophyMarkup), but needs the ORIGINAL centered-flex-column
+   layout here instead of the shelf-anchored absolute positioning that
+   governs it inside a case — .ctr-zoom-body centers it with flex, not a
+   photo-calibrated bay. */
 .ctr-zoom-body .ctr-trophy--zoomed {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
   max-width: none;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.ctr-zoom-body .ctr-trophy-case-visual {
+.ctr-zoom-body .ctr-trophy--zoomed .ctr-trophy-case-visual {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: 100%;
   margin-bottom: 4%;
 }
 
 .ctr-zoom-body .ctr-nameplate {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 92%;
   font-size: clamp(0.85rem, 2.4vw, 1.1rem);
   padding: 5% 4%;
 }
@@ -480,11 +510,53 @@
   }
 }
 
-/* Bottom-anchoring trophies (flex-end) reads as a "shelf" on a wide case
-   but leaves a dead gap above them once the room grows tall on mobile
-   (see the aspect-ratio override above) — center them instead there. */
+/* Below 560px, fall back to a generic centered flex row instead of the
+   photo-calibrated absolute positioning used above. The cabin photo gets
+   cropped much more aggressively on this taller aspect ratio (see
+   ctr-layout.js) — its rightmost bay falls outside the visible crop
+   entirely — so pinning trophies to bay coordinates would put one of
+   them off-frame with no way to reach it. This flex layout was already
+   verified across phone widths before the shelf-lock existed; ctr.js
+   skips setting the inline positioning styles at this width so these
+   rules are free to apply. */
 @media (max-width: 560px) {
   .ctr-case-trophies {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    justify-content: safe center;
+    gap: 3%;
+    padding: 8% 6%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .ctr-trophy {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 clamp(76px, 22vw, 140px);
+    width: auto;
+  }
+
+  .ctr-trophy-case-visual {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    margin-bottom: 6%;
+  }
+
+  .ctr-nameplate {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 92%;
   }
 }

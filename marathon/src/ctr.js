@@ -25,6 +25,16 @@
     var carousel = CtrCarousel.attach(rootEl);
     var zoom = CtrZoom.attachOverlay(rootEl);
 
+    // Trophies are pinned to photo-calibrated bay positions (see
+    // ctr-layout.js) as a percentage of the room's rendered size — that
+    // has to be recomputed on resize, since the mapping depends on the
+    // room's current aspect ratio.
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { CtrView.repositionTrophies(rootEl); }, 100);
+    });
+
     if (!config.memberId) {
       CtrView.renderStatus(rootEl, 'No member context provided — pass memberId or ?member_id= in the URL.');
       return { rootEl: rootEl, config: config, carousel: carousel };

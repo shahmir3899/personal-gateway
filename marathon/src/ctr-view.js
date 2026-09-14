@@ -98,9 +98,57 @@
       container.innerHTML = trophies.map(function (t) {
         return buildTrophyMarkup(t, viewModel, config, marathon.id);
       }).join('');
+      positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
     });
 
     wireArtworkFallback(rootEl);
+  }
+
+  /**
+   * Pins each in-case trophy to its photo-calibrated bay (see
+   * ctr-layout.js) by setting left/bottom/width inline, computed against
+   * the room's current rendered size. Call again on resize — the CSS
+   * itself has no way to track a specific photo's geometry.
+   */
+  function positionTrophyElements(rootEl, trophyEls) {
+    var roomEl = rootEl.querySelector('.ctr-room');
+    if (!roomEl || !trophyEls.length) return;
+
+    // Below 560px the CSS falls back to a generic centered flex row (see
+    // ctr.css) instead of photo-calibrated positions — the cabin photo's
+    // rightmost bay is cropped out of frame entirely at that aspect
+    // ratio. Clear any inline positioning left over from a wider
+    // viewport (e.g. after a resize) so that fallback CSS can apply —
+    // an inline style would otherwise keep overriding it.
+    if (window.matchMedia && window.matchMedia('(max-width: 560px)').matches) {
+      trophyEls.forEach(function (el) {
+        el.style.left = '';
+        el.style.bottom = '';
+        el.style.width = '';
+      });
+      return;
+    }
+
+    var count = trophyEls.length;
+    trophyEls.forEach(function (el, i) {
+      var slot = CtrLayout.getSlotStyle(roomEl, i, count);
+      if (!slot) return;
+      el.style.left = slot.leftPercent + '%';
+      el.style.bottom = slot.bottomPercent + '%';
+      el.style.width = slot.widthPercent + '%';
+    });
+  }
+
+  /**
+   * Re-runs positioning for whichever trophies are currently rendered in
+   * all 3 cases — call on window resize (debounced) so the shelf-lock
+   * survives a viewport change or the mobile aspect-ratio breakpoint.
+   */
+  function repositionTrophies(rootEl) {
+    [1, 2, 3].forEach(function (caseNumber) {
+      var container = rootEl.querySelector('[data-case-trophies="' + caseNumber + '"]');
+      if (container) positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
+    });
   }
 
   function renderLockedMarathonTeaser(marathon, viewModel) {
@@ -232,6 +280,7 @@
     buildTrophyMarkup: buildTrophyMarkup,
     wireArtworkFallback: wireArtworkFallback,
     findMarathon: findMarathon,
-    sortedMarathons: sortedMarathons
+    sortedMarathons: sortedMarathons,
+    repositionTrophies: repositionTrophies
   };
 })(window);
