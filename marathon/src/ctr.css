@@ -321,6 +321,13 @@
   color: var(--ctr-gold-bright);
 }
 
+/* Same [hidden]-vs-display specificity issue as .ctr-zoom-overlay (see its
+   comment above): without this, the fallback label renders on top of real
+   artwork instead of staying hidden once the image loads successfully. */
+.ctr-trophy-art-fallback[hidden] {
+  display: none;
+}
+
 .ctr-trophy-light {
   position: absolute;
   inset: 0;

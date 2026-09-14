@@ -4,10 +4,14 @@ An embeddable "ship captain's cabin" trophy display widget for a WordPress
 referral program. Plain HTML/CSS/JS, no framework, scoped so it can drop into
 an existing theme without collisions.
 
-Currently in **Phase 0**: project skeleton, scoped widget shell, and a dev
-harness against mock data. See [docs/schema.md](docs/schema.md) for the data
-contract and the project plan (in conversation history) for the full phase
-breakdown.
+Working end-to-end against mock data: trophy rendering, click-to-zoom,
+marathon switching/locked-teaser, and a responsive pass are all done. Real
+Marathon 2 trophy art and the cabin background are in place (chroma-keyed
+from client-supplied photos — see `assets/trophies/marathon-2/README.md` for
+the placeholder tier mapping, since only 8 distinct designs exist for 10
+tiers). Still to do: WordPress packaging. See [docs/schema.md](docs/schema.md)
+for the data contract and the project plan (in conversation history) for the
+full phase breakdown.
 
 ## Running the dev harness locally
 
@@ -28,9 +32,14 @@ at the top of the page (`?member_id=101/102/103`).
   scoped styles, `index.html` dev harness)
 - `data/` — mock JSON fixtures (marathon/trophy definitions, sample member
   progress), matching the eventual real API's response shape
-- `assets/` — background photo, trophy PNGs, small UI icons (not yet
-  populated — see READMEs inside each folder)
+- `assets/` — background photo, trophy PNGs (both populated with real,
+  chroma-keyed art), small UI icons (not yet needed), and `reference/`
+  (style-mockup photos, not loaded by the widget)
 - `docs/schema.md` — the data contract between backend and widget
+- `scripts/chroma_key.py` — the dev utility used to cut trophies out of
+  their green-screen source photos; not part of the widget runtime
+- `source-images/` — the raw, un-keyed photos as supplied, archived here
+  (not referenced by any code)
 
 ## Design constraints (do not violate)
 
