@@ -17,15 +17,15 @@
   function renderShell(rootEl, options) {
     rootEl.classList.add('ctr-widget');
     rootEl.innerHTML =
-      '<div class="ctr-room" style="background-image:url(\'' + escapeUrl(options.assetsBase + 'backgrounds/cabin.jpg') + '\')">' +
-        '<div class="ctr-marathon-nav">' +
-          '<button type="button" class="ctr-marathon-btn ctr-marathon-prev" aria-label="Previous marathon">&#8249;</button>' +
-          '<div class="ctr-marathon-label">' +
-            '<span class="ctr-marathon-name"></span>' +
-            '<span class="ctr-marathon-badge"></span>' +
-          '</div>' +
-          '<button type="button" class="ctr-marathon-btn ctr-marathon-next" aria-label="Next marathon">&#8250;</button>' +
+      '<div class="ctr-marathon-nav">' +
+        '<button type="button" class="ctr-marathon-btn ctr-marathon-prev" aria-label="Previous marathon">&#8249;</button>' +
+        '<div class="ctr-marathon-label">' +
+          '<span class="ctr-marathon-name"></span>' +
+          '<span class="ctr-marathon-badge"></span>' +
         '</div>' +
+        '<button type="button" class="ctr-marathon-btn ctr-marathon-next" aria-label="Next marathon">&#8250;</button>' +
+      '</div>' +
+      '<div class="ctr-room" style="background-image:url(\'' + escapeUrl(options.assetsBase + 'backgrounds/cabin.jpg') + '\')">' +
         '<div class="ctr-viewport">' +
           '<div class="ctr-track">' +
             renderCasePlaceholder(1) +
@@ -33,27 +33,27 @@
             renderCasePlaceholder(3) +
           '</div>' +
         '</div>' +
-        '<div class="ctr-nav">' +
-          '<button type="button" class="ctr-nav-btn ctr-nav-prev" aria-label="Previous case">&#8249;</button>' +
-          '<div class="ctr-nav-dots">' +
-            '<span class="ctr-dot ctr-dot--active" data-case="1"></span>' +
-            '<span class="ctr-dot" data-case="2"></span>' +
-            '<span class="ctr-dot" data-case="3"></span>' +
-          '</div>' +
-          '<button type="button" class="ctr-nav-btn ctr-nav-next" aria-label="Next case">&#8250;</button>' +
-        '</div>' +
         '<div class="ctr-status"></div>' +
         '<div class="ctr-zoom-overlay" tabindex="-1" hidden>' +
           '<button type="button" class="ctr-zoom-close" aria-label="Close">&times;</button>' +
           '<div class="ctr-zoom-body"></div>' +
         '</div>' +
+      '</div>' +
+      '<div class="ctr-nav">' +
+        '<button type="button" class="ctr-nav-btn ctr-nav-prev" aria-label="Previous case">&#8249;</button>' +
+        '<div class="ctr-nav-dots">' +
+          '<span class="ctr-dot ctr-dot--active" data-case="1"></span>' +
+          '<span class="ctr-dot" data-case="2"></span>' +
+          '<span class="ctr-dot" data-case="3"></span>' +
+        '</div>' +
+        '<button type="button" class="ctr-nav-btn ctr-nav-next" aria-label="Next case">&#8250;</button>' +
+        '<span class="ctr-case-count">Case 1 of 3</span>' +
       '</div>';
   }
 
   function renderCasePlaceholder(caseNumber) {
     return (
       '<div class="ctr-case" data-case="' + caseNumber + '">' +
-        '<div class="ctr-case-label">Case ' + caseNumber + '</div>' +
         '<div class="ctr-case-trophies" data-case-trophies="' + caseNumber + '"></div>' +
       '</div>'
     );

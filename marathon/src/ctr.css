@@ -34,6 +34,20 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
+/* 16:9 has enough height for a trophy + nameplate at every width down to
+   phone-narrow once .ctr-case's padding bug (see above) is fixed. Below
+   560px we still switch to a taller ratio — not to avoid clipping, but
+   because a wider trophy (near its 140px cap) in a 16:9-short strip
+   feels cramped; the extra height buys more comfortable proportions.
+   The matching align-items override lives further down, after the real
+   .ctr-case-trophies rule — same specificity, so it must come later in
+   the cascade to actually win. */
+@media (max-width: 560px) {
+  .ctr-room {
+    aspect-ratio: 4 / 5;
+  }
+}
+
 .ctr-viewport {
   position: absolute;
   inset: 0;
@@ -52,41 +66,32 @@
   width: 33.3333%;
   height: 100%;
   flex: 0 0 33.3333%;
-  padding: 5% 4%;
-}
-
-.ctr-case-label {
-  position: absolute;
-  top: 17%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: clamp(0.7rem, 1.8vw, 1rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ctr-gold);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  /* No padding here on purpose: .ctr-case is a flex item of .ctr-track,
+     which is deliberately 300% wide (3 cases side by side). Percentage
+     padding on a flex item resolves against the FLEX CONTAINER's width
+     (2462px-ish), not the item's own ~820px width — 5% of that silently
+     became ~120px, crushing .ctr-case-trophies's available height. The
+     equivalent breathing room lives on .ctr-case-trophies below instead,
+     a plain block child whose percentages resolve against its own
+     (correct) containing width. */
 }
 
 .ctr-marathon-nav {
-  position: absolute;
-  top: 3%;
-  left: 4%;
-  right: 4%;
-  z-index: 6;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
+  padding: 2px 4px 10px;
 }
 
 .ctr-marathon-btn {
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid var(--ctr-gold);
   color: var(--ctr-gold-bright);
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
   flex: 0 0 auto;
@@ -142,22 +147,13 @@
   opacity: 0.75;
 }
 
-.ctr-case-trophies {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
 .ctr-nav {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 4%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  z-index: 10;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 10px 4px 2px;
 }
 
 .ctr-nav-btn {
@@ -170,10 +166,16 @@
   font-size: 1.3rem;
   line-height: 1;
   cursor: pointer;
+  flex: 0 0 auto;
 }
 
-.ctr-nav-btn:hover {
+.ctr-nav-btn:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.6);
+}
+
+.ctr-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .ctr-nav-dots {
@@ -194,22 +196,38 @@
   background: var(--ctr-gold-bright);
 }
 
-.ctr-status {
-  position: absolute;
-  top: 4%;
-  left: 4%;
-  font-size: 0.8rem;
+.ctr-case-count {
+  font-size: 0.75rem;
   color: var(--ctr-gold);
   opacity: 0.8;
+  width: 100%;
+  text-align: center;
+}
+
+.ctr-status {
+  position: absolute;
+  top: 3%;
+  left: 4%;
+  right: 4%;
+  font-size: 0.75rem;
+  color: var(--ctr-gold);
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 6;
 }
 
 .ctr-case-trophies {
   display: flex;
   align-items: flex-end;
-  justify-content: space-evenly;
-  gap: 2%;
+  justify-content: center;
+  justify-content: safe center;
+  gap: 3%;
   height: 100%;
-  padding: 26% 2% 6%;
+  padding: 8% 6%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .ctr-teaser {
@@ -253,9 +271,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 160px;
+  /* Fixed basis, no shrink: below this width trophies scroll horizontally
+     instead of shrinking into illegible thumbnails (see overflow-x on
+     .ctr-case-trophies). Capped at 140px (not wider) to leave headroom
+     for the nameplate below within the room's aspect-ratio height. */
+  flex: 0 0 clamp(76px, 22vw, 140px);
 }
 
 .ctr-trophy-case-visual {
@@ -440,11 +460,24 @@
   background: rgba(0, 0, 0, 0.75);
 }
 
-/* Responsive: tablet/phone just shrink padding/nav, layout stays flex-based */
+/* Responsive: layout is flex/clamp-based throughout and adapts continuously,
+   but touch targets need an explicit floor — 44px is the common minimum
+   comfortable tap size, and our buttons are visually smaller than that. */
 @media (max-width: 640px) {
-  .ctr-nav-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 1.1rem;
+  .ctr-nav-btn,
+  .ctr-marathon-btn,
+  .ctr-zoom-close {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+}
+
+/* Bottom-anchoring trophies (flex-end) reads as a "shelf" on a wide case
+   but leaves a dead gap above them once the room grows tall on mobile
+   (see the aspect-ratio override above) — center them instead there. */
+@media (max-width: 560px) {
+  .ctr-case-trophies {
+    align-items: center;
   }
 }
