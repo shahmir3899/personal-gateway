@@ -1,0 +1,169 @@
+<title>Captain's Trophy Room</title>
+<link rel="stylesheet" href="ctr.css" />
+<style>
+  :root {
+    --bg: #16100b;
+    --panel: #1f1811;
+    --ink: #f1e6cf;
+    --ink-dim: #b9a687;
+    --gold: #c9a24b;
+    --gold-bright: #ecd08a;
+    --rule: #3a2d1d;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    margin: 0;
+    padding-block: 40px;
+  }
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-inline: 20px;
+  }
+  .masthead {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    margin: 0 0 8px;
+    color: var(--gold-bright);
+    text-wrap: balance;
+    font-weight: normal;
+    letter-spacing: 0.01em;
+  }
+  .dek {
+    color: var(--ink-dim);
+    font-size: 0.98rem;
+    max-width: 46em;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .switcher {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 26px 0 30px;
+  }
+  .switcher button {
+    font-family: inherit;
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .switcher button:hover {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+  }
+  .switcher button[aria-pressed="true"] {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    background: #2a2013;
+  }
+  .switcher .member-sub {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--ink-dim);
+    margin-top: 2px;
+  }
+  #trophy-room-widget {
+    margin-bottom: 28px;
+  }
+  .notes {
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+    font-size: 0.82rem;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    max-width: 46em;
+    margin: 0 auto;
+  }
+  .notes strong {
+    color: var(--ink);
+  }
+  .notes ul {
+    margin: 8px 0 0;
+    padding-left: 1.2em;
+  }
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <p class="eyebrow">Referral program &middot; interactive preview</p>
+    <h1>Captain's Trophy Room</h1>
+    <p class="dek">
+      This is a working build, not a mockup — every trophy, lock state,
+      and case is live. Switch between sample members below, click a
+      trophy for the full-size view, and step between marathons with the
+      arrows above the cabinet.
+    </p>
+  </div>
+
+  <div class="switcher" role="group" aria-label="Preview as a different member">
+    <button type="button" data-member="101" aria-pressed="false">
+      New member
+      <span class="member-sub">0 referrals</span>
+    </button>
+    <button type="button" data-member="102" aria-pressed="false">
+      Partway through Marathon 1
+      <span class="member-sub">18 referrals</span>
+    </button>
+    <button type="button" data-member="103" aria-pressed="true">
+      Into Marathon 2
+      <span class="member-sub">62 referrals</span>
+    </button>
+  </div>
+
+  <div id="trophy-room-widget" data-ctr-widget></div>
+
+  <div class="notes">
+    <strong>What's real vs. placeholder in this preview:</strong>
+    <ul>
+      <li>Trophy art, the cabin photo, unlock logic, marathon progression, and the zoom view are all your actual assets and real widget code — not a design comp.</li>
+      <li>Member names, dates, and referral counts are sample data for this demo — the live version reads real referral counts from the site.</li>
+      <li>25K and 30K currently reuse the 5K and 10K trophy art as placeholders — only 8 of the 10 designs supplied were distinct.</li>
+    </ul>
+  </div>
+</div>
+
+<script src="ctr-model.js"></script>
+<script src="ctr-view.js"></script>
+<script src="ctr-carousel.js"></script>
+<script src="ctr-zoom.js"></script>
+<script src="ctr-marathon-nav.js"></script>
+<script src="ctr.js"></script>
+<script>
+  function loadMember(memberId) {
+    document.querySelectorAll('.switcher button').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.dataset.member === memberId));
+    });
+    CaptainsTrophyRoom.init({
+      mountEl: '#trophy-room-widget',
+      memberId: memberId,
+      dataSource: 'mock',
+      assetsBase: 'assets/',
+      dataBase: 'data/'
+    });
+  }
+
+  document.querySelectorAll('.switcher button').forEach(function (btn) {
+    btn.addEventListener('click', function () { loadMember(btn.dataset.member); });
+  });
+
+  loadMember('103');
+</script>
