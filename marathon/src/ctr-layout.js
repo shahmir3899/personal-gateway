@@ -48,6 +48,24 @@
   var BAY_HEIGHT_FRAC = (SHELF_Y - BAY_TOP_Y) / IMAGE_NATURAL.height;
   var TROPHY_HEIGHT_FRAC = BAY_HEIGHT_FRAC * TROPHY_HEIGHT_RATIO;
 
+  // Bay centers aren't evenly spaced (this photo's bays vary a bit in
+  // width), so a single fixed nameplate width leaves very uneven gaps
+  // between plaques — tight between the narrower middle bays, wide
+  // between the outer ones. Each nameplate is instead sized to the
+  // smallest gap to ITS OWN neighbor(s), minus a fixed breathing-room
+  // margin, so the gaps between plaques read as consistent even though
+  // the plaques themselves aren't quite the same width.
+  var NAMEPLATE_GAP_FRAC = 0.02; // ~2% of room width between adjacent plaques
+  var bayCenters = [];
+  for (var bi = 0; bi < BAY_COUNT; bi++) bayCenters.push(bayXFrac(bi));
+
+  function nameplateWidthFrac(i) {
+    var leftGap = i > 0 ? bayCenters[i] - bayCenters[i - 1] : null;
+    var rightGap = i < BAY_COUNT - 1 ? bayCenters[i + 1] - bayCenters[i] : null;
+    var minGap = Math.min(leftGap === null ? rightGap : leftGap, rightGap === null ? leftGap : rightGap);
+    return minGap - NAMEPLATE_GAP_FRAC;
+  }
+
   /**
    * Mimics CSS `background-size: cover; background-position: center;` to
    * map a fraction of the ORIGINAL image into a percentage of the
@@ -69,6 +87,9 @@
         var heightPx = hFrac * scaledH;
         var widthPx = heightPx * TROPHY_ASPECT_WH;
         return (widthPx / roomWidthPx) * 100;
+      },
+      widthFracToRoomPercent: function (wFrac) {
+        return (wFrac * scaledW / roomWidthPx) * 100;
       }
     };
   }
@@ -88,7 +109,8 @@
     return {
       leftPercent: mapper.xToRoomPercent(bayXFrac(i)),
       bottomPercent: 100 - mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height),
-      widthPercent: mapper.heightFracToWidthPercent(TROPHY_HEIGHT_FRAC)
+      widthPercent: mapper.heightFracToWidthPercent(TROPHY_HEIGHT_FRAC),
+      nameplateWidthPercent: mapper.widthFracToRoomPercent(nameplateWidthFrac(i))
     };
   }
 

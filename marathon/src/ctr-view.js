@@ -73,6 +73,8 @@
         el.style.left = '';
         el.style.bottom = '';
         el.style.width = '';
+        var np = el.querySelector('.ctr-nameplate');
+        if (np) np.style.width = '';
       });
       return;
     }
@@ -83,6 +85,18 @@
       el.style.left = slot.leftPercent + '%';
       el.style.bottom = slot.bottomPercent + '%';
       el.style.width = slot.widthPercent + '%';
+      // Nameplate width is set per-slot (not a fixed % of the trophy's
+      // own width) so the GAP between adjacent plaques stays visually
+      // consistent even though the bays themselves aren't evenly spaced
+      // — see ctr-layout.js nameplateWidthFrac. CtrLayout computes that
+      // target width as a percentage of the ROOM, but .ctr-nameplate's
+      // own `width` is a CSS percentage of its parent .ctr-trophy (its
+      // containing block) — so it has to be re-expressed relative to
+      // the trophy's own (just-set) width, not used as-is.
+      var nameplateEl = el.querySelector('.ctr-nameplate');
+      if (nameplateEl) {
+        nameplateEl.style.width = (slot.nameplateWidthPercent / slot.widthPercent * 100) + '%';
+      }
     });
   }
 
@@ -170,6 +184,7 @@
         '<div class="ctr-nameplate ctr-nameplate--locked">' +
           '<div class="ctr-nameplate-title">' + escapeHtml(trophy.name) + '</div>' +
           '<div class="ctr-nameplate-sub">' + trophy.requiredReferrals + ' referrals</div>' +
+          '<div class="ctr-nameplate-status ctr-nameplate-status--locked">&#128274; Locked</div>' +
         '</div>'
       );
     }
@@ -182,6 +197,7 @@
           '<span class="ctr-nameplate-stat"><strong>' + trophy.daysSinceFirstTrophy + '</strong>Day</span>' +
           '<span class="ctr-nameplate-stat"><strong>' + trophy.splitDaysSincePrevious + '</strong>Split</span>' +
         '</div>' +
+        '<div class="ctr-nameplate-status ctr-nameplate-status--unlocked">&#10003; Unlocked</div>' +
       '</div>'
     );
   }

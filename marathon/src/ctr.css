@@ -266,11 +266,14 @@
 }
 
 .ctr-trophy--locked .ctr-trophy-art {
-  filter: brightness(0.45) saturate(0.5);
+  /* Fully desaturated (not just dimmed) — matches the reference image,
+     where a not-yet-earned trophy reads as flat grayscale metal rather
+     than a darker version of its real gold/blue colors. */
+  filter: grayscale(1) brightness(0.55) contrast(0.95);
 }
 
 .ctr-trophy--locked .ctr-trophy-art-fallback {
-  filter: brightness(0.6);
+  filter: grayscale(1) brightness(0.6);
 }
 
 .ctr-trophy-glass {
@@ -309,7 +312,7 @@
      height that made the row's bottom edge uneven. Shorter content is
      centered in the extra space rather than sitting flush top, which
      reads as intentional rather than empty. */
-  height: 7.4em;
+  height: 8.8em;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -373,6 +376,29 @@
 
 .ctr-nameplate--locked {
   opacity: 0.6;
+}
+
+.ctr-nameplate-status {
+  margin-top: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.ctr-nameplate-status--unlocked {
+  color: #8fd19e;
+  border: 1px solid #8fd19e;
+  background: rgba(143, 209, 158, 0.12);
+}
+
+.ctr-nameplate-status--locked {
+  color: #d8c08a;
+  border: 1px solid #b08d57;
+  background: rgba(176, 141, 87, 0.12);
 }
 
 .ctr-trophy[role="button"] {
