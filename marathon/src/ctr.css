@@ -311,8 +311,16 @@
      wraps to 2 lines while "5K" stays on one, and without a shared
      height that made the row's bottom edge uneven. Shorter content is
      centered in the extra space rather than sitting flush top, which
-     reads as intentional rather than empty. */
-  height: 8.8em;
+     reads as intentional rather than empty.
+     Measured directly against the worst case ("Full Marathon 42.2K",
+     2-line title + name + date + stat chips + status pill): natural
+     content height came to 133px against a 10.75px nameplate font-size
+     (=12.4em) — the previous 8.8em was ~38px too short, and a flex box
+     centering content that's TALLER than its own fixed height overflows
+     equally in both directions, pushing the title above the box's own
+     top edge and into the trophy's space above it. 12.6em leaves a
+     small safety margin. */
+  height: 12.6em;
   display: flex;
   flex-direction: column;
   justify-content: center;
