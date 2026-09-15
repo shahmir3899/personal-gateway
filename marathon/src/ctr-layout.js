@@ -44,7 +44,7 @@
   // width — see DIVIDERS_X — so this can't be one shared size like the
   // previous, uniform-bay photo). Height follows from width via the
   // aspect ratio.
-  var TROPHY_WIDTH_RATIO = 0.68; // of the bay's own width
+  var TROPHY_WIDTH_RATIO = 0.82; // of the bay's own width
   var TROPHY_ASPECT_WH = 3 / 4;  // width = height * 3/4 (matches .ctr-trophy-case-visual)
 
   function clampIndex(index) {

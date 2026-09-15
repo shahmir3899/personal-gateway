@@ -257,22 +257,51 @@
   opacity: 1;
 }
 
+/* A small wooden plinth under the trophy — the real photo's recess
+   floor is bare, so the trophy otherwise reads as floating. Sits below
+   the artwork (z-index 1, under the art's 2 and the shadow's own place
+   right above it) and above the backdrop dimming layer. */
+.ctr-trophy-pedestal {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 0;
+  height: 8%;
+  z-index: 1;
+  background: linear-gradient(180deg, var(--ctr-wood-mid) 0%, var(--ctr-wood-dark) 100%);
+  border-radius: 1px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 170, 0.35),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.5),
+    0 2px 3px rgba(0, 0, 0, 0.5);
+}
+
 .ctr-trophy-shadow {
   position: absolute;
   left: 10%;
   right: 10%;
-  bottom: 2%;
-  height: 12%;
+  bottom: 8%;
+  height: 10%;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 75%);
   z-index: 1;
 }
 
 .ctr-trophy-art {
   position: absolute;
-  inset: 4%;
-  width: 92%;
-  height: 92%;
+  top: 4%;
+  left: 8%;
+  right: 8%;
+  bottom: 10%;
+  /* A replaced element (img) with position:absolute doesn't stretch to
+     fill its inset offsets the way a normal block does — without an
+     explicit width/height it keeps its raw intrinsic pixel size (this
+     art is 1024x1536) and the insets just reposition that oversized
+     box. width/height: 100% here is what actually makes it fill the
+     box top/left/right/bottom describe. */
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  object-position: 50% 100%;
   z-index: 2;
   transition: filter 0.4s ease;
 }
