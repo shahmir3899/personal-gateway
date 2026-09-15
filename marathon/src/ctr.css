@@ -20,15 +20,15 @@
   /* Unlock "spotlight" glow (see .ctr-trophy-glow) — tuned live in the
      Light Effect Tuner artifact. Two layers: a small bright hotspot
      near the fixture, and a broader warm ambient wash down the recess. */
-  --ctr-glow-hotspot-w: 40%;
-  --ctr-glow-hotspot-h: 20%;
+  --ctr-glow-hotspot-w: 12%;
+  --ctr-glow-hotspot-h: 7%;
   --ctr-glow-hotspot-x: 50%;
-  --ctr-glow-hotspot-y: 6%;
+  --ctr-glow-hotspot-y: 8%;
   --ctr-glow-hotspot-opacity: 0.9;
-  --ctr-glow-wash-w: 75%;
-  --ctr-glow-wash-h: 65%;
+  --ctr-glow-wash-w: 32%;
+  --ctr-glow-wash-h: 38%;
   --ctr-glow-wash-x: 50%;
-  --ctr-glow-wash-y: 0%;
+  --ctr-glow-wash-y: 22%;
   --ctr-glow-wash-opacity: 0.55;
   --ctr-glow-wash-mid-opacity: 0.22;
   --ctr-glow-strength: 1;
