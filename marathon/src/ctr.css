@@ -388,9 +388,10 @@
   text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
 }
 
-.ctr-nameplate--locked {
-  opacity: 0.6;
-}
+/* Text stays fully black/legible even when locked — dimming it via
+   opacity (an earlier version did this) washed the black text out
+   against the bright, near-transparent brass plaque. The grayscale
+   trophy artwork above already reads as "locked" on its own. */
 
 /* The smaller status plaque directly below the main nameplate — this
    background photo (unlike earlier ones) renders it as a genuinely
@@ -419,9 +420,6 @@
   font-size: clamp(0.3rem, 0.52vw, 0.36rem);
 }
 
-.ctr-status-plate--locked {
-  opacity: 0.55;
-}
 
 .ctr-trophy[role="button"] {
   cursor: pointer;
