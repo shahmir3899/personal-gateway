@@ -273,17 +273,19 @@
 
   // The in-room status plate is genuinely tiny in real pixels (the
   // client's own measured panel — see ctr-layout.js STATUS_RECTS — is
-  // only ~20px tall at typical widget width). A full date string there
+  // only ~20px tall at typical widget width). A full sentence there
   // doesn't get more legible by shrinking the font to fit; it just
   // renders as a blurry, illegible smudge that reads as "solid black".
-  // So the in-room version drops to a single icon (with the detail in a
-  // title tooltip); the zoom view has real room, so it keeps the full text.
+  // So the in-room version is icon + the referral number only (the
+  // tier's requiredReferrals — how many it took to earn, locked or not)
+  // at a fixed, actually-legible size, with the rest of the sentence in
+  // a title tooltip; the zoom view has real room, so it keeps the full text.
   function renderStatusPlate(trophy, viewModel, isZoomed) {
     if (!trophy.isUnlocked) {
       if (!isZoomed) {
         return (
           '<div class="ctr-status-plate ctr-status-plate--locked" title="' + trophy.requiredReferrals + ' referrals to unlock">' +
-            '<span aria-hidden="true">&#128274;</span>' +
+            '<span aria-hidden="true">&#128274;</span> ' + trophy.requiredReferrals +
           '</div>'
         );
       }
@@ -295,8 +297,8 @@
     }
     if (!isZoomed) {
       return (
-        '<div class="ctr-status-plate" title="Unlocked ' + formatDate(trophy.unlockedAt) + '">' +
-          '<span class="ctr-nameplate-check" aria-hidden="true">&#10003;</span>' +
+        '<div class="ctr-status-plate" title="Unlocked at ' + trophy.requiredReferrals + ' referrals, ' + formatDate(trophy.unlockedAt) + '">' +
+          '<span class="ctr-nameplate-check" aria-hidden="true">&#10003;</span> ' + trophy.requiredReferrals +
         '</div>'
       );
     }
