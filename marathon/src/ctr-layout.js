@@ -48,11 +48,11 @@
   // real artwork directly on the photo) — re-tune there again if the
   // background photo ever changes.
   var TROPHY_RECTS = [
-    { left: 31.00, top: 30.73, width: 11.65, height: 29.38 },
-    { left: 42.17, top: 25.56, width: 13.87, height: 33.92 },
-    { left: 54.47, top: 27.60, width: 13.65, height: 31.67 },
-    { left: 67.27, top: 27.08, width: 12.63, height: 31.99 },
-    { left: 79.40, top: 25.56, width: 14.69, height: 34.97 }
+    { left: 31.70, top: 33.23, width: 10.73, height: 25.63 },
+    { left: 44.85, top: 31.81, width: 11.32, height: 27.05 },
+    { left: 56.22, top: 31.15, width: 12.26, height: 27.08 },
+    { left: 68.79, top: 32.07, width: 10.43, height: 24.91 },
+    { left: 80.10, top: 31.81, width: 11.32, height: 27.05 }
   ];
 
   function clampIndex(index) {
