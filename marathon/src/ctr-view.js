@@ -216,7 +216,7 @@
         // wider/taller than the trophy's own box (see positionTrophyElements
         // / ctr-layout.js getGlowRect). Dark/invisible by default; fades
         // in on unlock via the outer --unlocked class.
-        '<div class="ctr-trophy-glow" aria-hidden="true"></div>' +
+        renderGlow(trophy.id) +
         renderTopPlate(trophy) +
         '<div class="ctr-trophy-case-visual">' +
           // Approximates the bay's own lit panel behind the trophy —
@@ -243,6 +243,38 @@
   // trophy's title, locked or not, matching the reference mockup.
   function renderTopPlate(trophy) {
     return '<div class="ctr-top-plate">' + escapeHtml(trophy.name) + ' Trophy</div>';
+  }
+
+  // The unlock "spotlight": a vector cone (SVG polygon), not a blurry
+  // CSS radial-gradient blob — narrow near the real ceiling fixture,
+  // widening as it falls toward the trophy, so it reads as a beam of
+  // light with a direction and a source rather than an undirected glow.
+  // Shape is fixed (a real spotlight's taper doesn't change bay to bay);
+  // color/blur/opacity/overall strength stay tunable via the
+  // --ctr-glow-* CSS variables on .ctr-widget. gradientUnits/ids are
+  // suffixed with the trophy's own id so multiple trophies on screen at
+  // once (in-room + a zoomed one) never collide over the same <defs> id.
+  function renderGlow(trophyId) {
+    var uid = escapeHtml(trophyId);
+    return (
+      '<div class="ctr-trophy-glow" aria-hidden="true">' +
+        '<svg class="ctr-glow-svg" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+          '<defs>' +
+            '<linearGradient id="ctr-glow-beam-' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
+              '<stop offset="0%" style="stop-color:#fff3d6; stop-opacity: var(--ctr-glow-hotspot-opacity)"/>' +
+              '<stop offset="55%" style="stop-color:#ffbb66; stop-opacity: calc(var(--ctr-glow-wash-opacity) * 0.6)"/>' +
+              '<stop offset="100%" style="stop-color:#ffbb66; stop-opacity: 0"/>' +
+            '</linearGradient>' +
+            '<radialGradient id="ctr-glow-core-' + uid + '" cx="50%" cy="0%" r="70%">' +
+              '<stop offset="0%" style="stop-color:#fff8e6; stop-opacity: var(--ctr-glow-hotspot-opacity)"/>' +
+              '<stop offset="100%" style="stop-color:#fff8e6; stop-opacity: 0"/>' +
+            '</radialGradient>' +
+          '</defs>' +
+          '<polygon points="47,2 53,2 74,90 26,90" fill="url(#ctr-glow-beam-' + uid + ')"/>' +
+          '<ellipse cx="50" cy="4" rx="11" ry="6" fill="url(#ctr-glow-core-' + uid + ')"/>' +
+        '</svg>' +
+      '</div>'
+    );
   }
 
   // The main plaque: member name, unlock date, and the two day-count

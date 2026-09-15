@@ -17,20 +17,14 @@
      artifact, then baked back in here as the final number. */
   --ctr-plate-scrim: 0.07;
 
-  /* Unlock "spotlight" glow (see .ctr-trophy-glow) — tuned live in the
-     Light Effect Tuner artifact. Two layers: a small bright hotspot
-     near the fixture, and a broader warm ambient wash down the recess. */
-  --ctr-glow-hotspot-w: 12%;
-  --ctr-glow-hotspot-h: 7%;
-  --ctr-glow-hotspot-x: 50%;
-  --ctr-glow-hotspot-y: 8%;
+  /* Unlock "spotlight" — a vector SVG cone (see renderGlow in
+     ctr-view.js and .ctr-glow-svg below), not a resizable CSS gradient
+     blob. The cone's own taper is fixed (a real spotlight's shape
+     doesn't change bay to bay); these control its color/brightness and
+     overall softness/strength, tunable live in the Room Tuner artifact. */
   --ctr-glow-hotspot-opacity: 0.9;
-  --ctr-glow-wash-w: 32%;
-  --ctr-glow-wash-h: 38%;
-  --ctr-glow-wash-x: 50%;
-  --ctr-glow-wash-y: 22%;
   --ctr-glow-wash-opacity: 0.55;
-  --ctr-glow-wash-mid-opacity: 0.22;
+  --ctr-glow-blur: 3px;
   --ctr-glow-strength: 1;
 
   position: relative;
@@ -254,9 +248,6 @@
   right: -10%;
   height: 70%;
   z-index: -1;
-  background:
-    radial-gradient(ellipse var(--ctr-glow-hotspot-w) var(--ctr-glow-hotspot-h) at var(--ctr-glow-hotspot-x) var(--ctr-glow-hotspot-y), rgba(255, 241, 214, var(--ctr-glow-hotspot-opacity)) 0%, rgba(255, 241, 214, 0) 100%),
-    radial-gradient(ellipse var(--ctr-glow-wash-w) var(--ctr-glow-wash-h) at var(--ctr-glow-wash-x) var(--ctr-glow-wash-y), rgba(255, 196, 110, var(--ctr-glow-wash-opacity)) 0%, rgba(255, 176, 90, var(--ctr-glow-wash-mid-opacity)) 45%, rgba(255, 176, 90, 0) 78%);
   opacity: 0;
   transition: opacity 0.6s ease;
   pointer-events: none;
@@ -264,6 +255,18 @@
 
 .ctr-trophy--unlocked .ctr-trophy-glow {
   opacity: var(--ctr-glow-strength);
+}
+
+/* The vector cone itself (see renderGlow in ctr-view.js) — a polygon
+   tapering from a point near the real ceiling fixture down to a spread
+   at the trophy, plus a small bright core at the source. Blurred as a
+   whole (not per-shape SVG filters — cheaper and softens the polygon's
+   otherwise hard edges into a believable beam) rather than left crisp. */
+.ctr-glow-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: blur(var(--ctr-glow-blur));
 }
 
 /* A small wooden plinth under the trophy — the real photo's recess
