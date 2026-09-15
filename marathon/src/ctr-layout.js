@@ -31,10 +31,17 @@
     return ((DIVIDERS_X[i] + DIVIDERS_X[i + 1]) / 2) / IMAGE_NATURAL.width;
   }
 
-  // Trophy width as a fraction of the image width — sized close to a
-  // bay's actual width (smallest bay is ~12.76%) so trophies read as
-  // properly filling their case rather than floating small inside it.
-  var TROPHY_WIDTH_FRAC = 0.134;
+  function bayWidthFrac(i) {
+    return (DIVIDERS_X[i + 1] - DIVIDERS_X[i]) / IMAGE_NATURAL.width;
+  }
+
+  // Trophy width is a fraction of ITS OWN bay's width, not a single
+  // shared size — the 5 bays aren't equal (bays 1-2 are ~12.8% of the
+  // image, bays 4-5 are ~14.6%). A shared width sized to fit safely in
+  // the narrowest bay was already overflowing bay 1/2's edges while
+  // bay 4/5 had visible room to spare. 92% of each bay's own width
+  // leaves a small consistent margin on every side.
+  var TROPHY_TO_BAY_RATIO = 0.92;
 
   /**
    * Mimics CSS `background-size: cover; background-position: center;` to
@@ -69,7 +76,7 @@
     return {
       leftPercent: mapper.xToRoomPercent(bayXFrac(i)),
       bottomPercent: 100 - mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height),
-      widthPercent: mapper.widthFracToRoomPercent(TROPHY_WIDTH_FRAC)
+      widthPercent: mapper.widthFracToRoomPercent(bayWidthFrac(i) * TROPHY_TO_BAY_RATIO)
     };
   }
 
