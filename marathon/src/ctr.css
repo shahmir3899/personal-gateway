@@ -336,15 +336,6 @@
   filter: grayscale(1) brightness(0.6);
 }
 
-.ctr-trophy-glass {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  background: linear-gradient(115deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.02) 35%, rgba(255, 255, 255, 0.1) 60%, rgba(255, 255, 255, 0) 100%);
-  border-radius: 4px;
-  pointer-events: none;
-}
-
 .ctr-trophy-lock {
   position: absolute;
   bottom: 4%;

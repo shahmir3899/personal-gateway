@@ -222,7 +222,7 @@
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +
-          (trophy.isUnlocked ? '' : '<div class="ctr-trophy-glass"></div><div class="ctr-trophy-lock" aria-hidden="true">&#128274;</div>') +
+          (trophy.isUnlocked ? '' : '<div class="ctr-trophy-lock" aria-hidden="true">&#128274;</div>') +
         '</div>' +
         renderNameplate(trophy, viewModel, marathonTotalDays || 0) +
         renderStatusPlate(trophy, viewModel, sizeClass === 'ctr-trophy--zoomed') +
