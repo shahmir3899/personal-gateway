@@ -226,7 +226,6 @@
           // the generic flex fallback (mobile). Dark by default; faded
           // to invisible when unlocked via the outer --unlocked class.
           '<div class="ctr-trophy-backdrop"></div>' +
-          '<div class="ctr-trophy-pedestal" aria-hidden="true"></div>' +
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +

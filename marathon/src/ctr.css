@@ -295,26 +295,11 @@
    floor is bare, so the trophy otherwise reads as floating. Sits below
    the artwork (z-index 1, under the art's 2 and the shadow's own place
    right above it) and above the backdrop dimming layer. */
-.ctr-trophy-pedestal {
-  position: absolute;
-  left: 22%;
-  right: 22%;
-  bottom: 0;
-  height: 8%;
-  z-index: 1;
-  background: linear-gradient(180deg, var(--ctr-wood-mid) 0%, var(--ctr-wood-dark) 100%);
-  border-radius: 1px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 220, 170, 0.35),
-    inset 0 -2px 2px rgba(0, 0, 0, 0.5),
-    0 2px 3px rgba(0, 0, 0, 0.5);
-}
-
 .ctr-trophy-shadow {
   position: absolute;
   left: 10%;
   right: 10%;
-  bottom: 8%;
+  bottom: 2%;
   height: 10%;
   background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 75%);
   z-index: 1;
@@ -325,7 +310,7 @@
   top: 4%;
   left: 8%;
   right: 8%;
-  bottom: 10%;
+  bottom: 4%;
   /* A replaced element (img) with position:absolute doesn't stretch to
      fill its inset offsets the way a normal block does — without an
      explicit width/height it keeps its raw intrinsic pixel size (this
