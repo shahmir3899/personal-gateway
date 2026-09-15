@@ -2,21 +2,25 @@
  * Captain's Trophy Room — photo-calibrated trophy positions.
  *
  * The case background (assets/backgrounds/cabin.jpg) has 5 real display
- * bays with their own arched recess and a two-tier brass plaque below it
- * (a main plaque for the trophy's name, a smaller one for its unlock
- * status). A marathon always shows exactly 5 trophies (no case
- * carousel), one per bay, left to right.
+ * bays, each with THREE brass plates: a title plate in the crown
+ * molding above the arch, a main plaque below the shelf (name/date/day
+ * stats), and a smaller status plate under that (unlock status). A
+ * marathon always shows exactly 5 trophies (no case carousel), one per
+ * bay, left to right.
  *
  * All measurements below came from sampling the image's pixels directly
  * at native resolution (arch dividers found by zooming into gridded
  * crops and confirming each pilaster/plaque edge visually, not
  * statistically guessed) — if the background photo is ever replaced,
- * these need re-measuring.
+ * these need re-measuring. This is the 3rd-generation photo (added the
+ * title plate row); the divider/main-plaque/status-plaque positions
+ * carried over unchanged from the 2nd generation — verified by
+ * overlaying the old rects on the new photo before reusing them — only
+ * TOP_RECTS is newly measured.
  *
- * Unlike the previous (2nd-generation) photo, this one's 5 bays are NOT
- * uniform width — the middle bay is noticeably narrower than the rest —
- * so trophy width is computed per-bay from its own divider span rather
- * than shared across all five.
+ * This photo's 5 bays are NOT uniform width — the middle bay is
+ * noticeably narrower than the rest — so trophy width is computed
+ * per-bay from its own divider span rather than shared across all five.
  */
 (function (global) {
   'use strict';
@@ -77,6 +81,19 @@
     { left: 57.99, top: 77.73, width: 7.63, height: 3.65 },
     { left: 70.84, top: 78.77, width: 7.17, height: 3.65 },
     { left: 84.05, top: 78.98, width: 7.49, height: 3.65 }
+  ];
+
+  // The title plate above each arch, in the crown molding — new in this
+  // photo generation. These are Claude's own pixel-measured estimate
+  // (the plates are photographed at a slight perspective tilt, so a
+  // straight rectangle is an approximation) — re-tune with the Nameplate
+  // Tuner artifact if they don't line up closely enough.
+  var TOP_RECTS = [
+    { left: 32.56, top: 9.90, width: 10.54, height: 4.17 },
+    { left: 44.91, top: 10.42, width: 10.32, height: 4.17 },
+    { left: 57.63, top: 10.94, width: 8.14, height: 4.43 },
+    { left: 68.31, top: 10.94, width: 9.81, height: 4.17 },
+    { left: 81.40, top: 10.94, width: 11.63, height: 3.91 }
   ];
 
   /**
@@ -162,6 +179,10 @@
     return rectForBay(STATUS_RECTS, roomEl, index);
   }
 
+  function getTopRect(roomEl, index) {
+    return rectForBay(TOP_RECTS, roomEl, index);
+  }
+
   /**
    * {leftPercent, topPercent, widthPercent, heightPercent} for the FULL
    * arched recess of bay i (its own divider span, full BAY_TOP_Y to
@@ -192,6 +213,7 @@
     getSlotStyle: getSlotStyle,
     getNameplateRect: getNameplateRect,
     getStatusRect: getStatusRect,
+    getTopRect: getTopRect,
     getGlowRect: getGlowRect
   };
 })(window);

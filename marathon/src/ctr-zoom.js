@@ -19,7 +19,11 @@
     var closeBtn = overlay.querySelector('.ctr-zoom-close');
 
     function open(trophy, viewModel, config, marathonId) {
-      body.innerHTML = CtrView.buildTrophyMarkup(trophy, viewModel, config, marathonId, 'ctr-trophy--zoomed');
+      var marathon = viewModel.marathons.filter(function (m) { return m.id === marathonId; })[0];
+      var marathonTotalDays = (marathon ? marathon.trophies : []).reduce(function (max, t) {
+        return t.isUnlocked ? Math.max(max, t.daysSinceFirstTrophy) : max;
+      }, 0);
+      body.innerHTML = CtrView.buildTrophyMarkup(trophy, viewModel, config, marathonId, 'ctr-trophy--zoomed', marathonTotalDays);
       CtrView.wireArtworkFallback(body);
       overlay.hidden = false;
       overlay.focus();

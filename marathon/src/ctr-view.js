@@ -47,8 +47,16 @@
     }
 
     var trophies = marathon.trophies.slice().sort(function (a, b) { return a.tierOrder - b.tierOrder; });
+    // "Total days" on the main plaque (see renderNameplate) is this
+    // marathon's own span, not a running lifetime total — the furthest
+    // any of its trophies got from the member's very first trophy ever.
+    // Same number on every plaque within one marathon; changes marathon
+    // to marathon.
+    var marathonTotalDays = trophies.reduce(function (max, t) {
+      return t.isUnlocked ? Math.max(max, t.daysSinceFirstTrophy) : max;
+    }, 0);
     container.innerHTML = trophies.map(function (t) {
-      return buildTrophyMarkup(t, viewModel, config, marathon.id);
+      return buildTrophyMarkup(t, viewModel, config, marathon.id, null, marathonTotalDays);
     }).join('');
 
     positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
@@ -73,7 +81,7 @@
         el.style.left = '';
         el.style.bottom = '';
         el.style.width = '';
-        ['.ctr-nameplate', '.ctr-status-plate', '.ctr-trophy-glow'].forEach(function (sel) {
+        ['.ctr-nameplate', '.ctr-status-plate', '.ctr-trophy-glow', '.ctr-top-plate'].forEach(function (sel) {
           var panel = el.querySelector(sel);
           if (panel) {
             panel.style.left = '';
@@ -112,6 +120,10 @@
       // just the trophy's own box, so it lines up with the real downlight
       // position above it — see ctr-layout.js getGlowRect.
       positionPanel(el, '.ctr-trophy-glow', CtrLayout.getGlowRect(roomEl, i), trophyRect, roomRect);
+      // The title plate sits ABOVE the arch, well above the trophy's own
+      // box — positionPanel doesn't care, it's just an absolute offset
+      // from the trophy's own (unrelated) position.
+      positionPanel(el, '.ctr-top-plate', CtrLayout.getTopRect(roomEl, i), trophyRect, roomRect);
     });
   }
 
@@ -178,7 +190,7 @@
    * both for the in-room trophies and — at a larger size via sizeClass —
    * for the zoom presentation view, so the two never drift out of sync.
    */
-  function buildTrophyMarkup(trophy, viewModel, config, marathonId, sizeClass) {
+  function buildTrophyMarkup(trophy, viewModel, config, marathonId, sizeClass, marathonTotalDays) {
     var lockedClass = trophy.isUnlocked ? 'ctr-trophy--unlocked' : 'ctr-trophy--locked';
     // All marathons currently share the one supplied art set — there's
     // only assets/trophies/marathon-2/ on disk. When a marathon gets its
@@ -193,6 +205,7 @@
         // / ctr-layout.js getGlowRect). Dark/invisible by default; fades
         // in on unlock via the outer --unlocked class.
         '<div class="ctr-trophy-glow" aria-hidden="true"></div>' +
+        renderTopPlate(trophy) +
         '<div class="ctr-trophy-case-visual">' +
           // Approximates the bay's own lit panel behind the trophy —
           // sized relative to the trophy's own box (bigger than it, not
@@ -206,30 +219,54 @@
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +
           (trophy.isUnlocked ? '' : '<div class="ctr-trophy-glass"></div><div class="ctr-trophy-lock" aria-hidden="true">&#128274;</div>') +
         '</div>' +
-        renderNameplate(trophy, viewModel) +
+        renderNameplate(trophy, viewModel, marathonTotalDays || 0) +
         renderStatusPlate(trophy, viewModel, sizeClass === 'ctr-trophy--zoomed') +
       '</div>'
     );
   }
 
-  // The current background photo renders two SEPARATE physical brass
-  // plaques per bay (a larger one, and a smaller one directly below it —
-  // see ctr-layout.js NAMEPLATE_RECTS/STATUS_RECTS), so the trophy's name
-  // and its unlock status each get their own panel now instead of being
-  // crammed into one footer line. Both panels are still small in real
-  // pixels — keep content to one short line per panel.
-  function renderNameplate(trophy, viewModel) {
+  // The title plate in the crown molding above the arch — new in the
+  // 3rd-generation photo (see ctr-layout.js TOP_RECTS). Always shows the
+  // trophy's title, locked or not, matching the reference mockup.
+  function renderTopPlate(trophy) {
+    return '<div class="ctr-top-plate">' + escapeHtml(trophy.name) + ' Trophy</div>';
+  }
+
+  // The main plaque: member name, unlock date, and the two day-count
+  // stats from the reference mockup ("# OF DAYS" since the member's
+  // very first trophy, and this trophy's own split from the previous
+  // one). A locked trophy has none of that yet — real dates/stats don't
+  // exist until it actually unlocks — so it just shows what's needed to
+  // get there instead of a placeholder.
+  function renderNameplate(trophy, viewModel, marathonTotalDays) {
     if (!trophy.isUnlocked) {
       return (
         '<div class="ctr-nameplate ctr-nameplate--locked">' +
-          '<div class="ctr-nameplate-title">' + escapeHtml(trophy.name) + '</div>' +
+          '<div class="ctr-nameplate-name">' + escapeHtml(viewModel.displayName || '') + '</div>' +
+          '<div class="ctr-nameplate-goal">' + trophy.requiredReferrals + ' referrals<br>to unlock</div>' +
         '</div>'
       );
     }
+    // Ordered by priority, not by reading order — the plate's real
+    // height varies a lot per bay/viewport width (as little as ~44px at
+    // the narrowest desktop size), and CSS clips whatever doesn't fit
+    // (align-items: flex-start + overflow: hidden) rather than shrinking
+    // everything down to an illegible size. Name + day count survive
+    // even the smallest plates; date and the split/total stats are the
+    // first to go. Nothing here is EVER hidden, just possibly clipped —
+    // the zoom view always shows all of it.
     return (
       '<div class="ctr-nameplate">' +
-        '<div class="ctr-nameplate-title">' + escapeHtml(trophy.name) + '</div>' +
         '<div class="ctr-nameplate-name">' + escapeHtml(viewModel.displayName || '') + '</div>' +
+        '<div class="ctr-nameplate-days">' +
+          '<span class="ctr-nameplate-days-count">' + trophy.daysSinceFirstTrophy + '</span>' +
+          '<span class="ctr-nameplate-days-label">days</span>' +
+        '</div>' +
+        '<div class="ctr-nameplate-date">' + formatDate(trophy.unlockedAt) + '</div>' +
+        '<div class="ctr-nameplate-stats">' +
+          '<span>Split ' + trophy.splitDaysSincePrevious + '</span>' +
+          '<span>Total ' + marathonTotalDays + '</span>' +
+        '</div>' +
       '</div>'
     );
   }

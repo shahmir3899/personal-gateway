@@ -330,56 +330,133 @@
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
+/* The title plate in the crown molding above the arch (see
+   ctr-layout.js TOP_RECTS) — new in the 3rd-generation photo. Position/
+   size are set inline in pixels by ctr-view.js the same way as every
+   other plate here; the rules below are only the pre-JS / no-JS
+   fallback. */
+.ctr-top-plate {
+  position: absolute;
+  left: 50%;
+  top: -2.2em;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 1.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  background: rgba(8, 5, 2, var(--ctr-plate-scrim));
+  overflow: hidden;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1a1207;
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
+  font-size: clamp(0.4rem, 0.75vw, 0.55rem);
+}
+
 .ctr-nameplate {
   /* Position/size are set inline in pixels by ctr-view.js, computed
      from the client's own hand-measured panel rectangle (see
      ctr-layout.js NAMEPLATE_RECTS — measured with the Nameplate Tuner
      artifact against the real photo, not guessed). left/top/width/
-     height below are only the pre-JS / no-JS fallback. */
+     height below are only the pre-JS / no-JS fallback. This plate's
+     real height varies a LOT by viewport width — as little as ~44px at
+     the narrowest desktop size, as much as ~115px at the widest — so
+     unlike every other plate here, content isn't a fixed line count:
+     rows are ordered by priority (see renderNameplate) and top-aligned
+     (not centered) so the least important ones are what clips away via
+     overflow: hidden when the plate is short, instead of every row
+     shrinking down to an illegible size to force a fit. */
   position: absolute;
   left: 50%;
   top: 8px;
   transform: translateX(-50%);
   width: 100%;
-  height: 3.4em;
+  height: 6em;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 1px;
+  gap: 3%;
   text-align: center;
   /* No border/box — the text sits directly on the real engraved brass
      plaque in the photo instead of a drawn-on box. Just enough of a
      dark scrim for the text to stay legible against the plaque's own
      brightness/reflections. */
   background: rgba(8, 5, 2, var(--ctr-plate-scrim));
-  padding: 2% 6%;
+  padding: 6% 6% 2%;
   overflow: hidden;
-  /* The measured panel is small — content is condensed to one or two
-     short lines (see renderNameplate) and sized to fit that real space
-     rather than the box being resized to fit a longer wishlist of
-     content. */
-  font-size: clamp(0.34rem, 0.62vw, 0.42rem);
-  line-height: 1.25;
 }
 
-/* The scrim is now nearly transparent (see --ctr-plate-scrim) so the
-   real brass plaque shows through almost fully — bright gold, not dark
-   wood. Gold-on-gold text stopped being legible at that opacity, so the
-   text itself is black (like real engraved lettering), with a thin
-   light highlight instead of a dark shadow for a subtle engraved look. */
-.ctr-nameplate-title {
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #1a1207;
-  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
-}
-
+/* The scrim is nearly transparent (see --ctr-plate-scrim) so the real
+   brass plaque shows through almost fully — bright gold, not dark wood.
+   Gold-on-gold text stopped being legible at that opacity, so text is
+   black (like real engraved lettering) with a thin light highlight
+   instead of a dark shadow for a subtle engraved look. Text stays fully
+   black/legible even when locked — dimming it via opacity (an earlier
+   version did this) washed it out to invisible; the grayscale trophy
+   artwork above already reads as "locked" on its own. Every row below
+   has its own fixed-ish clamp (not a shared shrinking base font) so
+   whatever DOES show stays a real, legible size. */
 .ctr-nameplate-name {
   font-style: italic;
+  font-weight: bold;
   color: #1a1207;
   text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
+  font-size: clamp(0.5rem, 1.3vw, 0.7rem);
+  line-height: 1.1;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ctr-nameplate-days {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25em;
+  color: #1a1207;
+  line-height: 1;
+}
+
+.ctr-nameplate-days-count {
+  font-size: clamp(0.85rem, 1.9vw, 1.1rem);
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.5);
+}
+
+.ctr-nameplate-days-label {
+  font-size: clamp(0.36rem, 0.85vw, 0.48rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.75;
+}
+
+.ctr-nameplate-date {
+  color: #1a1207;
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
+  font-size: clamp(0.4rem, 1vw, 0.55rem);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.ctr-nameplate-stats {
+  display: flex;
+  gap: 0.7em;
+  opacity: 0.85;
+  color: #1a1207;
+  white-space: nowrap;
+  font-size: clamp(0.36rem, 0.85vw, 0.48rem);
+  line-height: 1.1;
+}
+
+.ctr-nameplate-goal {
+  font-size: clamp(0.42rem, 1vw, 0.58rem);
+  color: #1a1207;
+  line-height: 1.3;
 }
 
 .ctr-nameplate-check {
@@ -387,11 +464,6 @@
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
 }
-
-/* Text stays fully black/legible even when locked — dimming it via
-   opacity (an earlier version did this) washed the black text out
-   against the bright, near-transparent brass plaque. The grayscale
-   trophy artwork above already reads as "locked" on its own. */
 
 /* The smaller status plaque directly below the main nameplate — this
    background photo (unlike earlier ones) renders it as a genuinely
@@ -441,7 +513,15 @@
   z-index: 20;
   display: flex;
   align-items: center;
+  /* "safe center" (not just "center"): the richer zoomed plate content
+     (title + name/date/day-stats + status) can be taller than the room
+     at some sizes. Plain "center" lets the overflow clip off both ends
+     with the top half unreachable (the room itself clips via overflow:
+     hidden) — "safe" falls back to start-alignment with a scrollbar
+     instead, so the title plate above the trophy never vanishes. */
+  align-items: safe center;
   justify-content: center;
+  overflow-y: auto;
   background: rgba(0, 0, 0, 0.72);
   outline: none;
 }
@@ -456,6 +536,7 @@
 
 .ctr-zoom-body {
   width: min(70%, 320px);
+  padding-block: 24px;
 }
 
 /* The zoomed trophy reuses the exact same markup as an in-room trophy
@@ -482,6 +563,18 @@
   bottom: auto;
   width: 100%;
   margin-bottom: 4%;
+}
+
+.ctr-zoom-body .ctr-top-plate {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 92%;
+  height: auto;
+  margin-bottom: 3%;
+  font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+  padding: 3% 4%;
 }
 
 .ctr-zoom-body .ctr-nameplate {
@@ -579,6 +672,17 @@
     bottom: auto;
     width: 100%;
     margin-bottom: 6%;
+  }
+
+  .ctr-top-plate {
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 92%;
+    height: auto;
+    margin-bottom: 4%;
+    font-size: clamp(0.5rem, 1.5vw, 0.68rem);
   }
 
   .ctr-nameplate {
