@@ -6,42 +6,47 @@
  * exactly 5 trophies now (no case carousel), one per bay, left to right.
  *
  * All measurements below came from sampling the image's pixels directly
- * at native resolution 1536x1024 (brightest point of the brass shelf
- * ledge, and the wood divider pilasters between bays) — if the
- * background photo is ever replaced, these need re-measuring.
+ * at native resolution (brightest point of the brass shelf ledge, and
+ * the wood divider pilasters between bays) — if the background photo is
+ * ever replaced, these need re-measuring.
+ *
+ * This regenerated photo (2nd generation, front-on with minimal camera
+ * perspective) has noticeably shorter/wider bay openings than the first
+ * one — bay height dropped from ~41% of the image height to ~26%, and
+ * critically that height is now the SAME across all 5 bays (only their
+ * widths still vary a bit). That means trophies can be sized off bay
+ * HEIGHT alone (one shared size) instead of needing a different width
+ * per bay — the previous photo needed per-bay width sizing specifically
+ * because its bays varied in width but a trophy sized to fill that
+ * width would have been far too short for the tall bay.
  */
 (function (global) {
   'use strict';
 
-  var IMAGE_NATURAL = { width: 1536, height: 1024 };
+  var IMAGE_NATURAL = { width: 1672, height: 941 };
 
-  // Left/right divider x per bay (6 dividers bound 5 bays), and the
-  // shared bay-interior top/shelf y. The shelf actually has a very
-  // slight rightward slope in the photo (perspective), but the plaques
-  // read as a cleaner, more "designed" row using one flat shelf line
-  // instead of following it — so unlike an earlier version, only ONE
-  // shelf y is used for every bay.
-  var DIVIDERS_X = [456, 652, 848, 1064, 1288, 1512];
+  // 6 dividers bound the 5 bays (measured: pixel-luminance minima at the
+  // wood pilasters, verified visually by overlaying the lines on the
+  // photo). Bay top/shelf y measured at each bay's own center and
+  // averaged — see docs in git history for the per-bay raw values.
+  var DIVIDERS_X = [395, 670, 882, 1103, 1311, 1571];
   var BAY_TOP_Y = 200;
-  var SHELF_Y = 617;
+  var SHELF_Y = 443;
 
   var BAY_COUNT = 5;
+
+  // Trophy height as a fraction of the bay's own (now-uniform) height,
+  // and its aspect ratio — width follows from height, not the other way
+  // around, since height is the dimension that's consistent across bays.
+  var TROPHY_HEIGHT_RATIO = 0.9; // of the bay's height
+  var TROPHY_ASPECT_WH = 3 / 4;  // width = height * 3/4 (matches .ctr-trophy-case-visual)
 
   function bayXFrac(i) {
     return ((DIVIDERS_X[i] + DIVIDERS_X[i + 1]) / 2) / IMAGE_NATURAL.width;
   }
 
-  function bayWidthFrac(i) {
-    return (DIVIDERS_X[i + 1] - DIVIDERS_X[i]) / IMAGE_NATURAL.width;
-  }
-
-  // Trophy width is a fraction of ITS OWN bay's width, not a single
-  // shared size — the 5 bays aren't equal (bays 1-2 are ~12.8% of the
-  // image, bays 4-5 are ~14.6%). A shared width sized to fit safely in
-  // the narrowest bay was already overflowing bay 1/2's edges while
-  // bay 4/5 had visible room to spare. 92% of each bay's own width
-  // leaves a small consistent margin on every side.
-  var TROPHY_TO_BAY_RATIO = 0.92;
+  var BAY_HEIGHT_FRAC = (SHELF_Y - BAY_TOP_Y) / IMAGE_NATURAL.height;
+  var TROPHY_HEIGHT_FRAC = BAY_HEIGHT_FRAC * TROPHY_HEIGHT_RATIO;
 
   /**
    * Mimics CSS `background-size: cover; background-position: center;` to
@@ -59,13 +64,20 @@
     return {
       xToRoomPercent: function (xFrac) { return ((xFrac * scaledW - offsetX) / roomWidthPx) * 100; },
       yToRoomPercent: function (yFrac) { return ((yFrac * scaledH - offsetY) / roomHeightPx) * 100; },
-      widthFracToRoomPercent: function (wFrac) { return (wFrac * scaledW / roomWidthPx) * 100; }
+      // For a SIZE (not a position) — no offset subtraction needed.
+      heightFracToWidthPercent: function (hFrac) {
+        var heightPx = hFrac * scaledH;
+        var widthPx = heightPx * TROPHY_ASPECT_WH;
+        return (widthPx / roomWidthPx) * 100;
+      }
     };
   }
 
   /**
    * {leftPercent, bottomPercent, widthPercent} for the trophy at bay
    * index i (0-4), against the room element's CURRENT rendered size.
+   * widthPercent is derived from the shared trophy HEIGHT (see file
+   * comment) via the aspect ratio, so it's the same for every bay.
    */
   function getSlotStyle(roomEl, index) {
     var rect = roomEl.getBoundingClientRect();
@@ -76,38 +88,12 @@
     return {
       leftPercent: mapper.xToRoomPercent(bayXFrac(i)),
       bottomPercent: 100 - mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height),
-      widthPercent: mapper.widthFracToRoomPercent(bayWidthFrac(i) * TROPHY_TO_BAY_RATIO)
-    };
-  }
-
-  /**
-   * {left, top, width, height} (all percent) for bay i's lit interior —
-   * used to dim/brighten that bay's spotlight depending on lock state.
-   */
-  function getBayRect(roomEl, index) {
-    var rect = roomEl.getBoundingClientRect();
-    if (!rect.width || !rect.height) return null;
-    var i = Math.max(0, Math.min(BAY_COUNT - 1, index));
-    var mapper = coverMapper(rect.width, rect.height);
-
-    var leftFrac = DIVIDERS_X[i] / IMAGE_NATURAL.width;
-    var rightFrac = DIVIDERS_X[i + 1] / IMAGE_NATURAL.width;
-    var leftPct = mapper.xToRoomPercent(leftFrac);
-    var rightPct = mapper.xToRoomPercent(rightFrac);
-    var topPct = mapper.yToRoomPercent(BAY_TOP_Y / IMAGE_NATURAL.height);
-    var bottomPct = mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height);
-
-    return {
-      leftPercent: leftPct,
-      widthPercent: rightPct - leftPct,
-      topPercent: topPct,
-      heightPercent: bottomPct - topPct
+      widthPercent: mapper.heightFracToWidthPercent(TROPHY_HEIGHT_FRAC)
     };
   }
 
   global.CtrLayout = {
     BAY_COUNT: BAY_COUNT,
-    getSlotStyle: getSlotStyle,
-    getBayRect: getBayRect
+    getSlotStyle: getSlotStyle
   };
 })(window);

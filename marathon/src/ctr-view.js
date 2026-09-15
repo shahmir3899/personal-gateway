@@ -19,7 +19,6 @@
         '<button type="button" class="ctr-marathon-btn ctr-marathon-next" aria-label="Next marathon">&#8250;</button>' +
       '</div>' +
       '<div class="ctr-room" style="background-image:url(\'' + escapeUrl(options.assetsBase + 'backgrounds/cabin.jpg') + '\')">' +
-        '<div class="ctr-bay-lights" data-bay-lights></div>' +
         '<div class="ctr-trophies" data-trophies></div>' +
         '<div class="ctr-status"></div>' +
         '<div class="ctr-zoom-overlay" tabindex="-1" hidden>' +
@@ -40,12 +39,10 @@
     updateMarathonNav(rootEl, viewModel, marathon);
 
     var container = rootEl.querySelector('[data-trophies]');
-    var lightsContainer = rootEl.querySelector('[data-bay-lights]');
     if (!container) return;
 
     if (!marathon.isAccessible) {
       container.innerHTML = renderLockedMarathonTeaser(marathon, viewModel);
-      renderBayLights(rootEl, lightsContainer, []); // all bays dark
       return;
     }
 
@@ -55,7 +52,6 @@
     }).join('');
 
     positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
-    renderBayLights(rootEl, lightsContainer, trophies);
     wireArtworkFallback(rootEl);
   }
 
@@ -91,53 +87,12 @@
   }
 
   /**
-   * One dimmed/lit overlay per bay — bright (spotlight "on") behind an
-   * unlocked trophy, dimmed ("off") for a locked one or an empty bay.
-   * Independent of the trophy elements themselves so it still works for
-   * the locked-marathon teaser (all 5 bays dark, no trophies at all).
-   */
-  function renderBayLights(rootEl, lightsContainer, trophies) {
-    if (!lightsContainer) return;
-    var roomEl = rootEl.querySelector('.ctr-room');
-    var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
-
-    if (isMobile) {
-      lightsContainer.innerHTML = '';
-      return;
-    }
-
-    var html = '';
-    for (var i = 0; i < CtrLayout.BAY_COUNT; i++) {
-      var rect = CtrLayout.getBayRect(roomEl, i);
-      if (!rect) continue;
-      var trophy = trophies[i];
-      var lit = !!(trophy && trophy.isUnlocked);
-      html += '<div class="ctr-bay-light' + (lit ? ' ctr-bay-light--on' : '') + '" style="' +
-        'left:' + rect.leftPercent + '%;' +
-        'width:' + rect.widthPercent + '%;' +
-        'top:' + rect.topPercent + '%;' +
-        'height:' + rect.heightPercent + '%;' +
-      '"></div>';
-    }
-    lightsContainer.innerHTML = html;
-  }
-
-  /**
-   * Re-runs positioning/lighting for whichever marathon is currently
+   * Re-runs trophy positioning for whichever marathon is currently
    * rendered — call on window resize (debounced).
    */
-  function repositionTrophies(rootEl, viewModel, marathonId) {
+  function repositionTrophies(rootEl) {
     var container = rootEl.querySelector('[data-trophies]');
     if (container) positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
-
-    var marathon = marathonId ? findMarathon(viewModel, marathonId) : null;
-    var lightsContainer = rootEl.querySelector('[data-bay-lights]');
-    if (marathon && marathon.isAccessible) {
-      var trophies = marathon.trophies.slice().sort(function (a, b) { return a.tierOrder - b.tierOrder; });
-      renderBayLights(rootEl, lightsContainer, trophies);
-    } else if (lightsContainer) {
-      renderBayLights(rootEl, lightsContainer, []);
-    }
   }
 
   function renderLockedMarathonTeaser(marathon, viewModel) {
@@ -192,6 +147,13 @@
     return (
       '<div class="ctr-trophy ' + lockedClass + (sizeClass ? ' ' + sizeClass : '') + '" data-trophy-id="' + trophy.id + '">' +
         '<div class="ctr-trophy-case-visual">' +
+          // Approximates the bay's own lit panel behind the trophy —
+          // sized relative to the trophy's own box (bigger than it, not
+          // a separate photo-coordinate rectangle), so it automatically
+          // follows the trophy whether it's shelf-locked (desktop) or in
+          // the generic flex fallback (mobile). Dark by default; faded
+          // to invisible when unlocked via the outer --unlocked class.
+          '<div class="ctr-trophy-backdrop"></div>' +
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +

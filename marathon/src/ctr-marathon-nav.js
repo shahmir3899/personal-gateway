@@ -43,7 +43,7 @@
     window.addEventListener('resize', function () {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        CtrView.repositionTrophies(rootEl, viewModel, sorted[currentIndex].id);
+        CtrView.repositionTrophies(rootEl);
       }, 100);
     });
 
