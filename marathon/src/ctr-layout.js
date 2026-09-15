@@ -49,10 +49,10 @@
   // background photo ever changes.
   var TROPHY_RECTS = [
     { left: 31.70, top: 33.23, width: 10.73, height: 25.63 },
-    { left: 44.85, top: 31.81, width: 11.32, height: 27.05 },
-    { left: 56.22, top: 31.15, width: 12.26, height: 27.08 },
-    { left: 68.79, top: 32.07, width: 10.43, height: 24.91 },
-    { left: 80.10, top: 31.81, width: 11.32, height: 27.05 }
+    { left: 43.57, top: 32.64, width: 11.32, height: 27.05 },
+    { left: 55.29, top: 32.40, width: 12.26, height: 27.08 },
+    { left: 68.44, top: 33.95, width: 10.43, height: 24.91 },
+    { left: 81.26, top: 31.39, width: 11.32, height: 27.05 }
   ];
 
   function clampIndex(index) {
