@@ -15,7 +15,7 @@
   /* How dark the scrim behind nameplate/status text is, over the real
      photographed brass plaque — tuned live in the Plaque Style Tuner
      artifact, then baked back in here as the final number. */
-  --ctr-plate-scrim: 0.48;
+  --ctr-plate-scrim: 0.07;
 
   position: relative;
   width: 100%;
@@ -363,23 +363,29 @@
   line-height: 1.25;
 }
 
+/* The scrim is now nearly transparent (see --ctr-plate-scrim) so the
+   real brass plaque shows through almost fully — bright gold, not dark
+   wood. Gold-on-gold text stopped being legible at that opacity, so the
+   text itself is black (like real engraved lettering), with a thin
+   light highlight instead of a dark shadow for a subtle engraved look. */
 .ctr-nameplate-title {
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--ctr-gold-bright);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 5px rgba(0, 0, 0, 0.6);
+  color: #1a1207;
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
 }
 
 .ctr-nameplate-name {
   font-style: italic;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  color: #1a1207;
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
 }
 
 .ctr-nameplate-check {
-  color: #8fd19e;
+  color: #1f5c33;
   font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
 }
 
 .ctr-nameplate--locked {
@@ -407,8 +413,8 @@
   /* No border/box, same as .ctr-nameplate — just enough scrim to keep
      the text legible over the real brass status plate in the photo. */
   background: rgba(8, 5, 2, var(--ctr-plate-scrim));
-  color: var(--ctr-gold-bright);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 5px rgba(0, 0, 0, 0.6);
+  color: #1a1207;
+  text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
   overflow: hidden;
   font-size: clamp(0.3rem, 0.52vw, 0.36rem);
 }
