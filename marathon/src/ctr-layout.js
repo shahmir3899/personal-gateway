@@ -48,23 +48,19 @@
   var BAY_HEIGHT_FRAC = (SHELF_Y - BAY_TOP_Y) / IMAGE_NATURAL.height;
   var TROPHY_HEIGHT_FRAC = BAY_HEIGHT_FRAC * TROPHY_HEIGHT_RATIO;
 
-  // Bay centers aren't evenly spaced (this photo's bays vary a bit in
-  // width), so a single fixed nameplate width leaves very uneven gaps
-  // between plaques — tight between the narrower middle bays, wide
-  // between the outer ones. Each nameplate is instead sized to the
-  // smallest gap to ITS OWN neighbor(s), minus a fixed breathing-room
-  // margin, so the gaps between plaques read as consistent even though
-  // the plaques themselves aren't quite the same width.
-  var NAMEPLATE_GAP_FRAC = 0.02; // ~2% of room width between adjacent plaques
-  var bayCenters = [];
-  for (var bi = 0; bi < BAY_COUNT; bi++) bayCenters.push(bayXFrac(bi));
-
-  function nameplateWidthFrac(i) {
-    var leftGap = i > 0 ? bayCenters[i] - bayCenters[i - 1] : null;
-    var rightGap = i < BAY_COUNT - 1 ? bayCenters[i + 1] - bayCenters[i] : null;
-    var minGap = Math.min(leftGap === null ? rightGap : leftGap, rightGap === null ? leftGap : rightGap);
-    return minGap - NAMEPLATE_GAP_FRAC;
-  }
+  // Nameplate rectangles — NOT derived/guessed like the values above.
+  // These are the exact carved-wood-panel rectangles the client measured
+  // by hand with the Nameplate Tuner artifact (drag/resize boxes over
+  // this same photo), given back as {left, top, width, height} percent
+  // of the full 1672x941 image. Re-run that tool and paste new numbers
+  // here if the background photo ever changes.
+  var NAMEPLATE_RECTS = [
+    { left: 25.84, top: 54.91, width: 10.83, height: 13.97 },
+    { left: 38.78, top: 54.50, width: 10.72, height: 14.17 },
+    { left: 52.09, top: 55.53, width: 11.06, height: 13.76 },
+    { left: 66.18, top: 55.94, width: 11.06, height: 13.76 },
+    { left: 79.94, top: 55.53, width: 11.53, height: 14.59 }
+  ];
 
   /**
    * Mimics CSS `background-size: cover; background-position: center;` to
@@ -109,13 +105,46 @@
     return {
       leftPercent: mapper.xToRoomPercent(bayXFrac(i)),
       bottomPercent: 100 - mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height),
-      widthPercent: mapper.heightFracToWidthPercent(TROPHY_HEIGHT_FRAC),
-      nameplateWidthPercent: mapper.widthFracToRoomPercent(nameplateWidthFrac(i))
+      widthPercent: mapper.heightFracToWidthPercent(TROPHY_HEIGHT_FRAC)
+    };
+  }
+
+  /**
+   * {leftPercent, topPercent, widthPercent, heightPercent} for nameplate
+   * i's hand-measured panel rectangle (see NAMEPLATE_RECTS), as a
+   * percentage of the ROOM — same cover-crop mapping as everything else
+   * here. ctr-view.js converts this to pixels relative to the trophy
+   * element itself (not used as a CSS percentage directly) because the
+   * nameplate is nested inside .ctr-trophy, whose own height is 0 —
+   * percentage sizing against a zero-height ancestor doesn't work, but
+   * pixel values anchored to the trophy's own measured position do.
+   */
+  function getNameplateRect(roomEl, index) {
+    var rect = roomEl.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    var i = Math.max(0, Math.min(BAY_COUNT - 1, index));
+    var mapper = coverMapper(rect.width, rect.height);
+    var r = NAMEPLATE_RECTS[i];
+
+    var leftFrac = r.left / 100;
+    var topFrac = r.top / 100;
+    var rightFrac = (r.left + r.width) / 100;
+    var bottomFrac = (r.top + r.height) / 100;
+
+    var leftPercent = mapper.xToRoomPercent(leftFrac);
+    var topPercent = mapper.yToRoomPercent(topFrac);
+
+    return {
+      leftPercent: leftPercent,
+      topPercent: topPercent,
+      widthPercent: mapper.xToRoomPercent(rightFrac) - leftPercent,
+      heightPercent: mapper.yToRoomPercent(bottomFrac) - topPercent
     };
   }
 
   global.CtrLayout = {
     BAY_COUNT: BAY_COUNT,
-    getSlotStyle: getSlotStyle
+    getSlotStyle: getSlotStyle,
+    getNameplateRect: getNameplateRect
   };
 })(window);

@@ -74,10 +74,18 @@
         el.style.bottom = '';
         el.style.width = '';
         var np = el.querySelector('.ctr-nameplate');
-        if (np) np.style.width = '';
+        if (np) {
+          np.style.left = '';
+          np.style.top = '';
+          np.style.width = '';
+          np.style.height = '';
+          np.style.transform = '';
+        }
       });
       return;
     }
+
+    var roomRect = roomEl.getBoundingClientRect();
 
     trophyEls.forEach(function (el, i) {
       var slot = CtrLayout.getSlotStyle(roomEl, i);
@@ -85,17 +93,27 @@
       el.style.left = slot.leftPercent + '%';
       el.style.bottom = slot.bottomPercent + '%';
       el.style.width = slot.widthPercent + '%';
-      // Nameplate width is set per-slot (not a fixed % of the trophy's
-      // own width) so the GAP between adjacent plaques stays visually
-      // consistent even though the bays themselves aren't evenly spaced
-      // — see ctr-layout.js nameplateWidthFrac. CtrLayout computes that
-      // target width as a percentage of the ROOM, but .ctr-nameplate's
-      // own `width` is a CSS percentage of its parent .ctr-trophy (its
-      // containing block) — so it has to be re-expressed relative to
-      // the trophy's own (just-set) width, not used as-is.
+
+      // The nameplate's rectangle was hand-measured against the actual
+      // photo (see ctr-layout.js NAMEPLATE_RECTS / the Nameplate Tuner
+      // artifact) rather than derived from the trophy's own size. It's
+      // positioned in PIXELS relative to the trophy element's own
+      // top-left corner (measured fresh, after the trophy's own
+      // position above takes effect) rather than as a CSS percentage,
+      // because .ctr-trophy has no real height (0 — both its children
+      // are position:absolute) and percentage sizing against a
+      // zero-height ancestor doesn't resolve the way you'd expect.
       var nameplateEl = el.querySelector('.ctr-nameplate');
-      if (nameplateEl) {
-        nameplateEl.style.width = (slot.nameplateWidthPercent / slot.widthPercent * 100) + '%';
+      var npRect = CtrLayout.getNameplateRect(roomEl, i);
+      if (nameplateEl && npRect) {
+        var trophyRect = el.getBoundingClientRect();
+        var targetLeftPx = (npRect.leftPercent / 100) * roomRect.width;
+        var targetTopPx = (npRect.topPercent / 100) * roomRect.height;
+        nameplateEl.style.transform = 'none';
+        nameplateEl.style.left = (targetLeftPx - (trophyRect.left - roomRect.left)) + 'px';
+        nameplateEl.style.top = (targetTopPx - (trophyRect.top - roomRect.top)) + 'px';
+        nameplateEl.style.width = (npRect.widthPercent / 100 * roomRect.width) + 'px';
+        nameplateEl.style.height = (npRect.heightPercent / 100 * roomRect.height) + 'px';
       }
     });
   }
@@ -178,13 +196,20 @@
     );
   }
 
+  // Condensed to 3 lines (unlocked) / 2 lines (locked) — the panel the
+  // client hand-measured with the Nameplate Tuner is genuinely small
+  // (as little as ~67px tall), too small to fit the previous 5-row
+  // layout (title/name/date/stat-chips/status-pill) at any legible font
+  // size. Status is now a small inline icon rather than a full
+  // UNLOCKED/LOCKED pill, and day/split stats share the date's line.
   function renderNameplate(trophy, viewModel) {
     if (!trophy.isUnlocked) {
       return (
         '<div class="ctr-nameplate ctr-nameplate--locked">' +
           '<div class="ctr-nameplate-title">' + escapeHtml(trophy.name) + '</div>' +
-          '<div class="ctr-nameplate-sub">' + trophy.requiredReferrals + ' referrals</div>' +
-          '<div class="ctr-nameplate-status ctr-nameplate-status--locked">&#128274; Locked</div>' +
+          '<div class="ctr-nameplate-foot">' +
+            '<span aria-hidden="true">&#128274;</span> ' + trophy.requiredReferrals + ' referrals' +
+          '</div>' +
         '</div>'
       );
     }
@@ -192,12 +217,11 @@
       '<div class="ctr-nameplate">' +
         '<div class="ctr-nameplate-title">' + escapeHtml(trophy.name) + '</div>' +
         '<div class="ctr-nameplate-name">' + escapeHtml(viewModel.displayName || '') + '</div>' +
-        '<div class="ctr-nameplate-sub">' + formatDate(trophy.unlockedAt) + '</div>' +
-        '<div class="ctr-nameplate-stats">' +
-          '<span class="ctr-nameplate-stat"><strong>' + trophy.daysSinceFirstTrophy + '</strong>Day</span>' +
-          '<span class="ctr-nameplate-stat"><strong>' + trophy.splitDaysSincePrevious + '</strong>Split</span>' +
+        '<div class="ctr-nameplate-foot">' +
+          formatDate(trophy.unlockedAt) + ' &middot; D' + trophy.daysSinceFirstTrophy +
+          ' &middot; S' + trophy.splitDaysSincePrevious +
+          ' <span class="ctr-nameplate-check" aria-hidden="true">&#10003;</span>' +
         '</div>' +
-        '<div class="ctr-nameplate-status ctr-nameplate-status--unlocked">&#10003; Unlocked</div>' +
       '</div>'
     );
   }

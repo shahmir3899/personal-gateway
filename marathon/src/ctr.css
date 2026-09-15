@@ -296,36 +296,22 @@
 }
 
 .ctr-nameplate {
+  /* Position/size are set inline in pixels by ctr-view.js, computed
+     from the client's own hand-measured panel rectangle (see
+     ctr-layout.js NAMEPLATE_RECTS — measured with the Nameplate Tuner
+     artifact against the real photo, not guessed). left/top/width/
+     height below are only the pre-JS / no-JS fallback. */
   position: absolute;
   left: 50%;
   top: 8px;
   transform: translateX(-50%);
-  /* Capped at ~115% of the trophy's own width — the new photo's bay
-     centers are ~12.8% of the room's width apart at their closest, so
-     this is as wide as the plaque can get without touching its
-     neighbor's. Bigger than the old 88% now that the shorter/wider bay
-     shape leaves more room between bay centers relative to the trophy. */
-  width: 115%;
-  /* Fixed height (not just auto/min) so every plaque lines up as one
-     clean row along the shelf — a 2-word title like "Founding Runner"
-     wraps to 2 lines while "5K" stays on one, and without a shared
-     height that made the row's bottom edge uneven. Shorter content is
-     centered in the extra space rather than sitting flush top, which
-     reads as intentional rather than empty.
-     Measured directly against the worst case ("Full Marathon 42.2K",
-     2-line title + name + date + stat chips + status pill): natural
-     content height came to 133px against a 10.75px nameplate font-size
-     (=12.4em) — the previous 8.8em was ~38px too short, and a flex box
-     centering content that's TALLER than its own fixed height overflows
-     equally in both directions, pushing the title above the box's own
-     top edge and into the trophy's space above it. 12.6em leaves a
-     small safety margin. */
-  height: 12.6em;
+  width: 100%;
+  height: 4.6em;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   text-align: center;
   background: linear-gradient(180deg, var(--ctr-wood-mid), var(--ctr-wood-dark));
   border: 1px solid var(--ctr-gold);
@@ -333,15 +319,20 @@
   /* A thin inset gold hairline just inside the outer border — reads as
      an engraved brass plaque rather than a flat bordered box. */
   box-shadow: inset 0 0 0 1px rgba(236, 208, 138, 0.25), 0 2px 4px rgba(0, 0, 0, 0.4);
-  padding: 5% 6%;
-  font-size: clamp(0.5rem, 1.15vw, 0.7rem);
-  line-height: 1.3;
+  padding: 2% 6%;
+  overflow: hidden;
+  /* The measured panel is small (as little as ~67px tall in testing) —
+     content is condensed to 2-3 short lines (see renderNameplate) and
+     sized to fit that real space rather than the box being resized to
+     fit a longer wishlist of content. */
+  font-size: clamp(0.34rem, 0.62vw, 0.42rem);
+  line-height: 1.25;
 }
 
 .ctr-nameplate-title {
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--ctr-gold-bright);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
 }
@@ -350,63 +341,19 @@
   font-style: italic;
 }
 
-.ctr-nameplate-sub {
+.ctr-nameplate-foot {
   opacity: 0.85;
-  font-size: 0.9em;
+  font-size: 0.92em;
+  white-space: nowrap;
 }
 
-.ctr-nameplate-stats {
-  display: flex;
-  gap: 6%;
-  margin-top: 2px;
-}
-
-.ctr-nameplate-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  min-width: 3.4em;
-  padding: 2px 4px;
-  border: 1px solid rgba(201, 162, 75, 0.45);
-  border-radius: 3px;
-  font-size: 0.72em;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  opacity: 0.9;
-}
-
-.ctr-nameplate-stat strong {
-  font-size: 1.25em;
-  color: var(--ctr-gold-bright);
-  line-height: 1;
+.ctr-nameplate-check {
+  color: #8fd19e;
+  font-weight: bold;
 }
 
 .ctr-nameplate--locked {
   opacity: 0.6;
-}
-
-.ctr-nameplate-status {
-  margin-top: 3px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 0.68em;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.ctr-nameplate-status--unlocked {
-  color: #8fd19e;
-  border: 1px solid #8fd19e;
-  background: rgba(143, 209, 158, 0.12);
-}
-
-.ctr-nameplate-status--locked {
-  color: #d8c08a;
-  border: 1px solid #b08d57;
-  background: rgba(176, 141, 87, 0.12);
 }
 
 .ctr-trophy[role="button"] {
@@ -560,5 +507,9 @@
     transform: none;
     width: 92%;
     height: auto;
+    /* The base font-size is shrunk to fit the desktop layout's tiny
+       hand-measured panel — mobile uses natural flow with no such
+       constraint, so it can stay comfortably readable. */
+    font-size: clamp(0.55rem, 1.6vw, 0.75rem);
   }
 }
