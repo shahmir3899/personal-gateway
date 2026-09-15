@@ -60,11 +60,11 @@
   // background's nameplate rectangles were: measured in image-pixel
   // percent, not derived from the trophy's own layout.
   var NAMEPLATE_RECTS = [
-    { left: 32.56, top: 62.24, width: 7.78, height: 13.67 },
-    { left: 45.42, top: 62.24, width: 7.63, height: 13.67 },
-    { left: 57.99, top: 62.24, width: 7.63, height: 13.67 },
-    { left: 71.08, top: 62.24, width: 7.41, height: 13.67 },
-    { left: 83.94, top: 62.24, width: 7.49, height: 13.67 }
+    { left: 33.37, top: 62.03, width: 7.19, height: 14.71 },
+    { left: 45.65, top: 62.66, width: 6.93, height: 14.29 },
+    { left: 58.10, top: 62.66, width: 7.28, height: 14.30 },
+    { left: 71.08, top: 62.24, width: 7.29, height: 15.34 },
+    { left: 83.70, top: 62.66, width: 7.72, height: 15.54 }
   ];
 
   // The smaller status plaque directly below the main one — this photo
@@ -72,11 +72,11 @@
   // physical plate, so unlock status gets its own panel instead of a
   // footer line jammed into the main plaque.
   var STATUS_RECTS = [
-    { left: 32.56, top: 77.73, width: 7.78, height: 3.65 },
+    { left: 33.25, top: 77.73, width: 7.07, height: 3.65 },
     { left: 45.42, top: 77.73, width: 7.63, height: 3.65 },
     { left: 57.99, top: 77.73, width: 7.63, height: 3.65 },
-    { left: 71.08, top: 77.73, width: 7.41, height: 3.65 },
-    { left: 83.94, top: 77.73, width: 7.49, height: 3.65 }
+    { left: 70.84, top: 78.77, width: 7.17, height: 3.65 },
+    { left: 84.05, top: 78.98, width: 7.49, height: 3.65 }
   ];
 
   /**
