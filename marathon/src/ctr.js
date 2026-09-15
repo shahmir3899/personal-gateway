@@ -22,22 +22,11 @@
     }
 
     CtrView.renderShell(rootEl, config);
-    var carousel = CtrCarousel.attach(rootEl);
     var zoom = CtrZoom.attachOverlay(rootEl);
-
-    // Trophies are pinned to photo-calibrated bay positions (see
-    // ctr-layout.js) as a percentage of the room's rendered size — that
-    // has to be recomputed on resize, since the mapping depends on the
-    // room's current aspect ratio.
-    var resizeTimer = null;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () { CtrView.repositionTrophies(rootEl); }, 100);
-    });
 
     if (!config.memberId) {
       CtrView.renderStatus(rootEl, 'No member context provided — pass memberId or ?member_id= in the URL.');
-      return { rootEl: rootEl, config: config, carousel: carousel };
+      return { rootEl: rootEl, config: config, zoom: zoom };
     }
 
     CtrView.renderStatus(rootEl, 'Loading trophy room for member ' + config.memberId + '…');
@@ -46,7 +35,7 @@
       var viewModel = CtrModel.computeProgress(data.marathons, data.memberProgress);
       CtrView.renderStatus(rootEl, 'Loaded: ' + (viewModel.displayName || config.memberId) +
         ' — ' + viewModel.totalVerifiedReferrals + ' referrals');
-      var marathonNav = CtrMarathonNav.attach(rootEl, viewModel, config, { carousel: carousel, zoom: zoom });
+      var marathonNav = CtrMarathonNav.attach(rootEl, viewModel, config, { zoom: zoom });
       console.log('[CaptainsTrophyRoom] view-model', viewModel);
       widgetInstance.marathonNav = marathonNav;
     }).catch(function (err) {
@@ -54,7 +43,7 @@
       CtrView.renderStatus(rootEl, 'Failed to load trophy data.');
     });
 
-    var widgetInstance = { rootEl: rootEl, config: config, carousel: carousel, zoom: zoom };
+    var widgetInstance = { rootEl: rootEl, config: config, zoom: zoom };
     return widgetInstance;
   }
 

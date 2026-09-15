@@ -1,5 +1,5 @@
 {
-  "_comment": "Mock member progress states, keyed by member_id, for dev/testing. Shape mirrors the future API contract: { memberId, displayName, totalVerifiedReferrals, unlocks: [{ trophyId, unlockedAt }] }",
+  "_comment": "Mock member progress states, keyed by member_id, for dev/testing. Shape mirrors the future API contract: { memberId, displayName, totalVerifiedReferrals, unlocks: [{ trophyId, unlockedAt }] }. Trophy IDs match the 4-marathon x 5-trophy structure in marathons.json.",
   "members": {
     "101": {
       "memberId": "101",
@@ -28,16 +28,16 @@
         { "trophyId": "m1-10k",             "unlockedAt": "2026-04-09T09:00:00Z" },
         { "trophyId": "m1-15k",             "unlockedAt": "2026-04-15T09:00:00Z" },
         { "trophyId": "m1-20k",             "unlockedAt": "2026-04-22T09:00:00Z" },
-        { "trophyId": "m1-half",            "unlockedAt": "2026-04-24T09:00:00Z" },
-        { "trophyId": "m1-25k",             "unlockedAt": "2026-04-30T09:00:00Z" },
-        { "trophyId": "m1-30k",             "unlockedAt": "2026-05-08T09:00:00Z" },
-        { "trophyId": "m1-35k",             "unlockedAt": "2026-05-16T09:00:00Z" },
-        { "trophyId": "m1-full",            "unlockedAt": "2026-05-25T09:00:00Z" },
-        { "trophyId": "m2-founding-runner", "unlockedAt": "2026-05-26T09:00:00Z" },
-        { "trophyId": "m2-5k",              "unlockedAt": "2026-06-02T09:00:00Z" },
-        { "trophyId": "m2-10k",             "unlockedAt": "2026-06-10T09:00:00Z" },
-        { "trophyId": "m2-15k",             "unlockedAt": "2026-06-18T09:00:00Z" },
-        { "trophyId": "m2-20k",             "unlockedAt": "2026-06-27T09:00:00Z" }
+        { "trophyId": "m2-half",            "unlockedAt": "2026-04-24T09:00:00Z" },
+        { "trophyId": "m2-25k",             "unlockedAt": "2026-04-30T09:00:00Z" },
+        { "trophyId": "m2-30k",             "unlockedAt": "2026-05-08T09:00:00Z" },
+        { "trophyId": "m2-35k",             "unlockedAt": "2026-05-16T09:00:00Z" },
+        { "trophyId": "m2-full",            "unlockedAt": "2026-05-25T09:00:00Z" },
+        { "trophyId": "m3-founding-runner", "unlockedAt": "2026-05-26T09:00:00Z" },
+        { "trophyId": "m3-5k",              "unlockedAt": "2026-06-02T09:00:00Z" },
+        { "trophyId": "m3-10k",             "unlockedAt": "2026-06-10T09:00:00Z" },
+        { "trophyId": "m3-15k",             "unlockedAt": "2026-06-18T09:00:00Z" },
+        { "trophyId": "m3-20k",             "unlockedAt": "2026-06-27T09:00:00Z" }
       ]
     }
   }

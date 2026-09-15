@@ -26,13 +26,6 @@
     text-align: center;
     margin-bottom: 28px;
   }
-  .eyebrow {
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin: 0 0 10px;
-  }
   h1 {
     font-size: clamp(1.6rem, 4vw, 2.4rem);
     margin: 0 0 8px;
@@ -40,13 +33,6 @@
     text-wrap: balance;
     font-weight: normal;
     letter-spacing: 0.01em;
-  }
-  .dek {
-    color: var(--ink-dim);
-    font-size: 0.98rem;
-    max-width: 46em;
-    margin: 0 auto;
-    line-height: 1.6;
   }
   .switcher {
     display: flex;
@@ -84,34 +70,11 @@
   #trophy-room-widget {
     margin-bottom: 28px;
   }
-  .notes {
-    border-top: 1px solid var(--rule);
-    padding-top: 20px;
-    font-size: 0.82rem;
-    color: var(--ink-dim);
-    line-height: 1.7;
-    max-width: 46em;
-    margin: 0 auto;
-  }
-  .notes strong {
-    color: var(--ink);
-  }
-  .notes ul {
-    margin: 8px 0 0;
-    padding-left: 1.2em;
-  }
 </style>
 
 <div class="wrap">
   <div class="masthead">
-    <p class="eyebrow">Referral program &middot; interactive preview</p>
     <h1>Captain's Trophy Room</h1>
-    <p class="dek">
-      This is a working build, not a mockup — every trophy, lock state,
-      and case is live. Switch between sample members below, click a
-      trophy for the full-size view, and step between marathons with the
-      arrows above the cabinet.
-    </p>
   </div>
 
   <div class="switcher" role="group" aria-label="Preview as a different member">
@@ -124,27 +87,17 @@
       <span class="member-sub">18 referrals</span>
     </button>
     <button type="button" data-member="103" aria-pressed="true">
-      Into Marathon 2
+      Into Marathon 4
       <span class="member-sub">62 referrals</span>
     </button>
   </div>
 
   <div id="trophy-room-widget" data-ctr-widget></div>
-
-  <div class="notes">
-    <strong>What's real vs. placeholder in this preview:</strong>
-    <ul>
-      <li>Trophy art, the cabin photo, unlock logic, marathon progression, and the zoom view are all your actual assets and real widget code — not a design comp.</li>
-      <li>Member names, dates, and referral counts are sample data for this demo — the live version reads real referral counts from the site.</li>
-      <li>25K and 30K currently reuse the 5K and 10K trophy art as placeholders — only 8 of the 10 designs supplied were distinct.</li>
-    </ul>
-  </div>
 </div>
 
 <script src="ctr-model.js"></script>
 <script src="ctr-layout.js"></script>
 <script src="ctr-view.js"></script>
-<script src="ctr-carousel.js"></script>
 <script src="ctr-zoom.js"></script>
 <script src="ctr-marathon-nav.js"></script>
 <script src="ctr.js"></script>

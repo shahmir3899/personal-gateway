@@ -45,7 +45,6 @@
             id: trophy.id,
             name: trophy.name,
             tierOrder: trophy.tierOrder,
-            caseNumber: trophy.caseNumber,
             requiredReferrals: trophy.requiredReferrals,
             imageKey: trophy.imageKey,
             isUnlocked: isUnlocked,

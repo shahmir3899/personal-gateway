@@ -34,46 +34,12 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* 16:9 has enough height for a trophy + nameplate at every width down to
-   phone-narrow once .ctr-case's padding bug (see above) is fixed. Below
-   560px we still switch to a taller ratio — not to avoid clipping, but
-   because a wider trophy (near its 140px cap) in a 16:9-short strip
-   feels cramped; the extra height buys more comfortable proportions.
-   The matching align-items override lives further down, after the real
-   .ctr-case-trophies rule — same specificity, so it must come later in
-   the cascade to actually win. */
+/* Below 560px the room grows taller (4:5) instead of squeezing content —
+   the mobile fallback layout further down needs the extra height. */
 @media (max-width: 560px) {
   .ctr-room {
     aspect-ratio: 4 / 5;
   }
-}
-
-.ctr-viewport {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.ctr-track {
-  display: flex;
-  width: 300%;
-  height: 100%;
-  transition: transform 0.5s ease;
-}
-
-.ctr-case {
-  position: relative;
-  width: 33.3333%;
-  height: 100%;
-  flex: 0 0 33.3333%;
-  /* No padding here on purpose: .ctr-case is a flex item of .ctr-track,
-     which is deliberately 300% wide (3 cases side by side). Percentage
-     padding on a flex item resolves against the FLEX CONTAINER's width
-     (2462px-ish), not the item's own ~820px width — 5% of that silently
-     became ~120px, crushing .ctr-case-trophies's available height. The
-     equivalent breathing room lives on .ctr-case-trophies below instead,
-     a plain block child whose percentages resolve against its own
-     (correct) containing width. */
 }
 
 .ctr-marathon-nav {
@@ -147,63 +113,6 @@
   opacity: 0.75;
 }
 
-.ctr-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 12px 16px;
-  padding: 10px 4px 2px;
-}
-
-.ctr-nav-btn {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--ctr-gold);
-  color: var(--ctr-gold-bright);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
-  flex: 0 0 auto;
-}
-
-.ctr-nav-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.ctr-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.ctr-nav-dots {
-  display: flex;
-  gap: 8px;
-}
-
-.ctr-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid var(--ctr-gold);
-  cursor: pointer;
-}
-
-.ctr-dot--active {
-  background: var(--ctr-gold-bright);
-}
-
-.ctr-case-count {
-  font-size: 0.75rem;
-  color: var(--ctr-gold);
-  opacity: 0.8;
-  width: 100%;
-  text-align: center;
-}
-
 .ctr-status {
   position: absolute;
   top: 3%;
@@ -218,11 +127,33 @@
   z-index: 6;
 }
 
-.ctr-case-trophies {
+.ctr-trophies {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: visible;
+  z-index: 1;
+}
+
+/* One dimmed rectangle per bay, sized to that bay's actual lit interior
+   (see ctr-layout.js getBayRect) — sits between the background photo and
+   the trophies. Dark by default (bay "off"); a lit bay gets
+   .ctr-bay-light--on, which fades the dimming out so the photo's own
+   spotlight shows through untouched. */
+.ctr-bay-lights {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ctr-bay-light {
+  position: absolute;
+  background: rgba(5, 3, 1, 0.72);
+  transition: opacity 0.4s ease;
+}
+
+.ctr-bay-light--on {
+  opacity: 0;
 }
 
 .ctr-teaser {
@@ -273,8 +204,9 @@
   position: absolute;
   left: 50%;
   bottom: 20%;
-  width: 10%;
+  width: 11.8%;
   transform: translateX(-50%);
+  z-index: 1;
 }
 
 .ctr-trophy-case-visual {
@@ -297,9 +229,9 @@
 
 .ctr-trophy-art {
   position: absolute;
-  inset: 8%;
-  width: 84%;
-  height: 84%;
+  inset: 4%;
+  width: 92%;
+  height: 92%;
   object-fit: contain;
   z-index: 2;
   transition: filter 0.4s ease;
@@ -328,21 +260,8 @@
   display: none;
 }
 
-.ctr-trophy-light {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  background: radial-gradient(circle at 50% 30%, rgba(255, 224, 160, 0.35), rgba(255, 224, 160, 0) 65%);
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
 .ctr-trophy--locked .ctr-trophy-art {
-  filter: brightness(0.5) saturate(0.5);
-}
-
-.ctr-trophy--locked .ctr-trophy-light {
-  opacity: 0.35;
+  filter: brightness(0.45) saturate(0.5);
 }
 
 .ctr-trophy--locked .ctr-trophy-art-fallback {
@@ -373,16 +292,16 @@
   left: 50%;
   top: 6px;
   transform: translateX(-50%);
-  /* Capped at ~112% of the trophy's own width (not wider) — the bays in
-     the photo are only ~12.8% of the room's width apart at their
-     closest, and a wider plaque overlaps its neighbor's. */
+  /* Capped at ~112% of the trophy's own width (not wider) — adjacent
+     bays are only ~12.8% of the room's width apart at their closest,
+     and a wider plaque overlaps its neighbor's. */
   width: 112%;
-  /* Fixed height (not just auto/min) so every plaque in a case lines up
-     as one clean row along the shelf — a 2-word title like "Founding
-     Runner" wraps to 2 lines while "5K" stays on one, and without a
-     shared height that made the row's bottom edge uneven. Shorter
-     content is centered in the extra space rather than sitting flush
-     top, which reads as intentional rather than empty. */
+  /* Fixed height (not just auto/min) so every plaque lines up as one
+     clean row along the shelf — a 2-word title like "Founding Runner"
+     wraps to 2 lines while "5K" stays on one, and without a shared
+     height that made the row's bottom edge uneven. Shorter content is
+     centered in the extra space rather than sitting flush top, which
+     reads as intentional rather than empty. */
   height: 6.6em;
   display: flex;
   flex-direction: column;
@@ -451,10 +370,10 @@
   width: min(70%, 320px);
 }
 
-/* The zoomed trophy reuses the exact same markup as an in-case trophy
+/* The zoomed trophy reuses the exact same markup as an in-room trophy
    (see buildTrophyMarkup), but needs the ORIGINAL centered-flex-column
    layout here instead of the shelf-anchored absolute positioning that
-   governs it inside a case — .ctr-zoom-body centers it with flex, not a
+   governs it in the room — .ctr-zoom-body centers it with flex, not a
    photo-calibrated bay. */
 .ctr-zoom-body .ctr-trophy--zoomed {
   position: static;
@@ -512,7 +431,6 @@
    but touch targets need an explicit floor — 44px is the common minimum
    comfortable tap size, and our buttons are visually smaller than that. */
 @media (max-width: 640px) {
-  .ctr-nav-btn,
   .ctr-marathon-btn,
   .ctr-zoom-close {
     width: 44px;
@@ -527,11 +445,11 @@
    ctr-layout.js) — its rightmost bay falls outside the visible crop
    entirely — so pinning trophies to bay coordinates would put one of
    them off-frame with no way to reach it. This flex layout was already
-   verified across phone widths before the shelf-lock existed; ctr.js
-   skips setting the inline positioning styles at this width so these
-   rules are free to apply. */
+   verified across phone widths before the shelf-lock existed; ctr-view.js
+   skips setting the inline positioning styles (and hides the bay lights)
+   at this width so these rules are free to apply. */
 @media (max-width: 560px) {
-  .ctr-case-trophies {
+  .ctr-trophies {
     display: flex;
     align-items: center;
     justify-content: center;

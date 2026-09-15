@@ -1,9 +1,9 @@
 /**
  * Captain's Trophy Room — marathon switcher.
- * Lets a member step between marathons: revisit a completed one, or peek at
- * the next one (which renders as a locked teaser via CtrView.renderMarathon
- * until it's actually accessible). Independent of the case carousel — each
- * marathon switch resets the case carousel back to Case 1.
+ * Lets a member step between marathons: revisit a completed one, or peek
+ * at the next one (which renders as a locked teaser via
+ * CtrView.renderMarathon until it's actually accessible). This is the
+ * only navigation the widget has — there is no case carousel.
  */
 (function (global) {
   'use strict';
@@ -12,7 +12,7 @@
    * @param {Element} rootEl
    * @param {Object} viewModel - from CtrModel.computeProgress
    * @param {Object} config
-   * @param {Object} deps - { carousel, zoom } controllers to re-sync on switch
+   * @param {Object} deps - { zoom } controller to re-sync on switch
    */
   function attach(rootEl, viewModel, config, deps) {
     var sorted = CtrView.sortedMarathons(viewModel);
@@ -31,11 +31,21 @@
 
       CtrView.renderMarathon(rootEl, viewModel, marathon.id, config);
       CtrZoom.wireTrophyClicks(rootEl, viewModel, marathon.id, config, deps.zoom);
-      if (deps.carousel) deps.carousel.goTo(0);
     }
 
     if (prevBtn) prevBtn.addEventListener('click', function () { show(currentIndex - 1); });
     if (nextBtn) nextBtn.addEventListener('click', function () { show(currentIndex + 1); });
+
+    // Trophies/bay-lights are pinned to the photo's bay coordinates as a
+    // percentage of the room's rendered size — recompute on resize,
+    // since that mapping depends on the room's current aspect ratio.
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        CtrView.repositionTrophies(rootEl, viewModel, sorted[currentIndex].id);
+      }, 100);
+    });
 
     show(currentIndex);
 

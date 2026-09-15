@@ -1,15 +1,8 @@
 /**
  * Captain's Trophy Room — DOM rendering.
- * Phase 0: empty cabin background + 3-case skeleton shell.
- * Phase 1: render the current marathon's trophies into each case — layered
- * shadow/art/lighting/glass/lock, plus a real-HTML nameplate — driven
- * entirely by the CtrModel view-model.
- * Phase 2: click-to-zoom presentation overlay (wired from ctr-zoom.js,
- * which reuses buildTrophyMarkup below at a larger size).
- * Phase 3 (current): marathon switching — a nav bar above the cases lets a
- * member revisit completed marathons or peek at the next (locked) one,
- * which renders a teaser instead of real trophies (wired from
- * ctr-marathon-nav.js).
+ * A marathon always shows exactly 5 trophies, one per real display bay
+ * in the cabin photo (see ctr-layout.js) — no case carousel. Marathon
+ * switching (prev/next between marathons) is the only navigation.
  */
 (function (global) {
   'use strict';
@@ -26,48 +19,19 @@
         '<button type="button" class="ctr-marathon-btn ctr-marathon-next" aria-label="Next marathon">&#8250;</button>' +
       '</div>' +
       '<div class="ctr-room" style="background-image:url(\'' + escapeUrl(options.assetsBase + 'backgrounds/cabin.jpg') + '\')">' +
-        '<div class="ctr-viewport">' +
-          '<div class="ctr-track">' +
-            renderCasePlaceholder(1) +
-            renderCasePlaceholder(2) +
-            renderCasePlaceholder(3) +
-          '</div>' +
-        '</div>' +
+        '<div class="ctr-bay-lights" data-bay-lights></div>' +
+        '<div class="ctr-trophies" data-trophies></div>' +
         '<div class="ctr-status"></div>' +
         '<div class="ctr-zoom-overlay" tabindex="-1" hidden>' +
           '<button type="button" class="ctr-zoom-close" aria-label="Close">&times;</button>' +
           '<div class="ctr-zoom-body"></div>' +
         '</div>' +
-      '</div>' +
-      '<div class="ctr-nav">' +
-        '<button type="button" class="ctr-nav-btn ctr-nav-prev" aria-label="Previous case">&#8249;</button>' +
-        '<div class="ctr-nav-dots">' +
-          '<span class="ctr-dot ctr-dot--active" data-case="1"></span>' +
-          '<span class="ctr-dot" data-case="2"></span>' +
-          '<span class="ctr-dot" data-case="3"></span>' +
-        '</div>' +
-        '<button type="button" class="ctr-nav-btn ctr-nav-next" aria-label="Next case">&#8250;</button>' +
-        '<span class="ctr-case-count">Case 1 of 3</span>' +
       '</div>';
   }
 
-  function renderCasePlaceholder(caseNumber) {
-    return (
-      '<div class="ctr-case" data-case="' + caseNumber + '">' +
-        '<div class="ctr-case-trophies" data-case-trophies="' + caseNumber + '"></div>' +
-      '</div>'
-    );
-  }
-
   /**
-   * Renders one marathon's trophies into the 3 case slots already present
-   * in the shell, and updates the marathon nav label/buttons. Only the
-   * marathon named by marathonId is drawn — the shell/carousel is shared
-   * across marathons and reused as-is when switching between them.
-   *
-   * A marathon that isn't accessible yet (isAccessible: false) renders a
-   * locked "teaser" in place of real trophies, since its art may not even
-   * exist yet for an unannounced marathon.
+   * Renders the current marathon's 5 trophies (or a locked teaser) and
+   * updates the marathon nav label/buttons.
    */
   function renderMarathon(rootEl, viewModel, marathonId, config) {
     var marathon = findMarathon(viewModel, marathonId);
@@ -75,40 +39,29 @@
 
     updateMarathonNav(rootEl, viewModel, marathon);
 
+    var container = rootEl.querySelector('[data-trophies]');
+    var lightsContainer = rootEl.querySelector('[data-bay-lights]');
+    if (!container) return;
+
     if (!marathon.isAccessible) {
-      var teaserHtml = renderLockedMarathonTeaser(marathon, viewModel);
-      [1, 2, 3].forEach(function (caseNumber) {
-        var container = rootEl.querySelector('[data-case-trophies="' + caseNumber + '"]');
-        if (container) container.innerHTML = caseNumber === 1 ? teaserHtml : '';
-      });
+      container.innerHTML = renderLockedMarathonTeaser(marathon, viewModel);
+      renderBayLights(rootEl, lightsContainer, []); // all bays dark
       return;
     }
 
-    var trophiesByCase = { 1: [], 2: [], 3: [] };
-    marathon.trophies.forEach(function (t) {
-      (trophiesByCase[t.caseNumber] || (trophiesByCase[t.caseNumber] = [])).push(t);
-    });
+    var trophies = marathon.trophies.slice().sort(function (a, b) { return a.tierOrder - b.tierOrder; });
+    container.innerHTML = trophies.map(function (t) {
+      return buildTrophyMarkup(t, viewModel, config, marathon.id);
+    }).join('');
 
-    [1, 2, 3].forEach(function (caseNumber) {
-      var container = rootEl.querySelector('[data-case-trophies="' + caseNumber + '"]');
-      if (!container) return;
-      var trophies = (trophiesByCase[caseNumber] || []).slice().sort(function (a, b) {
-        return a.tierOrder - b.tierOrder;
-      });
-      container.innerHTML = trophies.map(function (t) {
-        return buildTrophyMarkup(t, viewModel, config, marathon.id);
-      }).join('');
-      positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
-    });
-
+    positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
+    renderBayLights(rootEl, lightsContainer, trophies);
     wireArtworkFallback(rootEl);
   }
 
   /**
-   * Pins each in-case trophy to its photo-calibrated bay (see
-   * ctr-layout.js) by setting left/bottom/width inline, computed against
-   * the room's current rendered size. Call again on resize — the CSS
-   * itself has no way to track a specific photo's geometry.
+   * Pins each trophy to its bay (see ctr-layout.js) as a percentage of
+   * the room's current rendered size. Call again on resize.
    */
   function positionTrophyElements(rootEl, trophyEls) {
     var roomEl = rootEl.querySelector('.ctr-room');
@@ -118,8 +71,7 @@
     // ctr.css) instead of photo-calibrated positions — the cabin photo's
     // rightmost bay is cropped out of frame entirely at that aspect
     // ratio. Clear any inline positioning left over from a wider
-    // viewport (e.g. after a resize) so that fallback CSS can apply —
-    // an inline style would otherwise keep overriding it.
+    // viewport so that fallback CSS can apply.
     if (window.matchMedia && window.matchMedia('(max-width: 560px)').matches) {
       trophyEls.forEach(function (el) {
         el.style.left = '';
@@ -129,9 +81,8 @@
       return;
     }
 
-    var count = trophyEls.length;
     trophyEls.forEach(function (el, i) {
-      var slot = CtrLayout.getSlotStyle(roomEl, i, count);
+      var slot = CtrLayout.getSlotStyle(roomEl, i);
       if (!slot) return;
       el.style.left = slot.leftPercent + '%';
       el.style.bottom = slot.bottomPercent + '%';
@@ -140,15 +91,53 @@
   }
 
   /**
-   * Re-runs positioning for whichever trophies are currently rendered in
-   * all 3 cases — call on window resize (debounced) so the shelf-lock
-   * survives a viewport change or the mobile aspect-ratio breakpoint.
+   * One dimmed/lit overlay per bay — bright (spotlight "on") behind an
+   * unlocked trophy, dimmed ("off") for a locked one or an empty bay.
+   * Independent of the trophy elements themselves so it still works for
+   * the locked-marathon teaser (all 5 bays dark, no trophies at all).
    */
-  function repositionTrophies(rootEl) {
-    [1, 2, 3].forEach(function (caseNumber) {
-      var container = rootEl.querySelector('[data-case-trophies="' + caseNumber + '"]');
-      if (container) positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
-    });
+  function renderBayLights(rootEl, lightsContainer, trophies) {
+    if (!lightsContainer) return;
+    var roomEl = rootEl.querySelector('.ctr-room');
+    var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
+
+    if (isMobile) {
+      lightsContainer.innerHTML = '';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < CtrLayout.BAY_COUNT; i++) {
+      var rect = CtrLayout.getBayRect(roomEl, i);
+      if (!rect) continue;
+      var trophy = trophies[i];
+      var lit = !!(trophy && trophy.isUnlocked);
+      html += '<div class="ctr-bay-light' + (lit ? ' ctr-bay-light--on' : '') + '" style="' +
+        'left:' + rect.leftPercent + '%;' +
+        'width:' + rect.widthPercent + '%;' +
+        'top:' + rect.topPercent + '%;' +
+        'height:' + rect.heightPercent + '%;' +
+      '"></div>';
+    }
+    lightsContainer.innerHTML = html;
+  }
+
+  /**
+   * Re-runs positioning/lighting for whichever marathon is currently
+   * rendered — call on window resize (debounced).
+   */
+  function repositionTrophies(rootEl, viewModel, marathonId) {
+    var container = rootEl.querySelector('[data-trophies]');
+    if (container) positionTrophyElements(rootEl, container.querySelectorAll('.ctr-trophy'));
+
+    var marathon = marathonId ? findMarathon(viewModel, marathonId) : null;
+    var lightsContainer = rootEl.querySelector('[data-bay-lights]');
+    if (marathon && marathon.isAccessible) {
+      var trophies = marathon.trophies.slice().sort(function (a, b) { return a.tierOrder - b.tierOrder; });
+      renderBayLights(rootEl, lightsContainer, trophies);
+    } else if (lightsContainer) {
+      renderBayLights(rootEl, lightsContainer, []);
+    }
   }
 
   function renderLockedMarathonTeaser(marathon, viewModel) {
@@ -179,7 +168,7 @@
     badgeEl.className = 'ctr-marathon-badge ' +
       (!marathon.isAccessible ? 'ctr-marathon-badge--locked' : marathon.isComplete ? 'ctr-marathon-badge--complete' : 'ctr-marathon-badge--active');
 
-    var sorted = viewModel.marathons.slice().sort(function (a, b) { return a.sequenceOrder - b.sequenceOrder; });
+    var sorted = sortedMarathons(viewModel);
     var index = -1;
     for (var i = 0; i < sorted.length; i++) {
       if (sorted[i].id === marathon.id) { index = i; break; }
@@ -189,14 +178,16 @@
   }
 
   /**
-   * Builds one trophy's full markup (layered visual + nameplate). Used both
-   * for the in-case trophies and — at a larger size via sizeClass — for the
-   * zoom presentation view, so the two never drift out of sync.
+   * Builds one trophy's full markup (layered visual + nameplate). Used
+   * both for the in-room trophies and — at a larger size via sizeClass —
+   * for the zoom presentation view, so the two never drift out of sync.
    */
   function buildTrophyMarkup(trophy, viewModel, config, marathonId, sizeClass) {
     var lockedClass = trophy.isUnlocked ? 'ctr-trophy--unlocked' : 'ctr-trophy--locked';
-    var artFolder = 'marathon-' + String(marathonId || '').replace(/^m/, '');
-    var artSrc = config.assetsBase + 'trophies/' + artFolder + '/' + trophy.imageKey + '.png';
+    // All marathons currently share the one supplied art set — there's
+    // only assets/trophies/marathon-2/ on disk. When a marathon gets its
+    // own distinct art later, key this off marathonId again instead.
+    var artSrc = config.assetsBase + 'trophies/marathon-2/' + trophy.imageKey + '.png';
 
     return (
       '<div class="ctr-trophy ' + lockedClass + (sizeClass ? ' ' + sizeClass : '') + '" data-trophy-id="' + trophy.id + '">' +
@@ -204,7 +195,6 @@
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +
-          '<div class="ctr-trophy-light"></div>' +
           (trophy.isUnlocked ? '' : '<div class="ctr-trophy-glass"></div><div class="ctr-trophy-lock" aria-hidden="true">&#128274;</div>') +
         '</div>' +
         renderNameplate(trophy, viewModel) +
