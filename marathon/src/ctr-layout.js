@@ -31,9 +31,10 @@
     return ((DIVIDERS_X[i] + DIVIDERS_X[i + 1]) / 2) / IMAGE_NATURAL.width;
   }
 
-  // Trophy width as a fraction of the image width — sized to fill most
-  // of a bay's ~13.4% average width without touching its neighbor.
-  var TROPHY_WIDTH_FRAC = 0.118;
+  // Trophy width as a fraction of the image width — sized close to a
+  // bay's actual width (smallest bay is ~12.76%) so trophies read as
+  // properly filling their case rather than floating small inside it.
+  var TROPHY_WIDTH_FRAC = 0.134;
 
   /**
    * Mimics CSS `background-size: cover; background-position: center;` to

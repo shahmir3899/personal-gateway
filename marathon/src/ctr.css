@@ -204,7 +204,7 @@
   position: absolute;
   left: 50%;
   bottom: 20%;
-  width: 11.8%;
+  width: 13.4%;
   transform: translateX(-50%);
   z-index: 1;
 }
@@ -214,7 +214,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  aspect-ratio: 1 / 1;
+  /* Taller than wide (not square) — the bay openings are tall, and most
+     of these trophy shapes (spire, wave, anchor) are themselves taller
+     than wide, so a squarer box was leaving space unused above the
+     trophy instead of making it look bigger. */
+  aspect-ratio: 3 / 4;
 }
 
 .ctr-trophy-shadow {
@@ -292,10 +296,11 @@
   left: 50%;
   top: 6px;
   transform: translateX(-50%);
-  /* Capped at ~112% of the trophy's own width (not wider) — adjacent
-     bays are only ~12.8% of the room's width apart at their closest,
-     and a wider plaque overlaps its neighbor's. */
-  width: 112%;
+  /* Capped at ~88% of the trophy's own width (narrower, not wider) —
+     adjacent bays are only ~12.8% of the room's width apart at their
+     closest, and the trophy itself is now 13.4% wide, so anything much
+     over ~88% of that starts overlapping the neighboring plaque. */
+  width: 88%;
   /* Fixed height (not just auto/min) so every plaque lines up as one
      clean row along the shelf — a 2-word title like "Founding Runner"
      wraps to 2 lines while "5K" stays on one, and without a shared
