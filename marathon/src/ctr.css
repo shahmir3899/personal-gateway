@@ -28,9 +28,9 @@
   --ctr-glow-wash-opacity: 0.55;
   --ctr-glow-blur: 3px;
   --ctr-glow-strength: 1;
-  --ctr-glow-offset-x: 0%;
-  --ctr-glow-offset-y: 0%;
-  --ctr-glow-scale: 1;
+  --ctr-glow-offset-x: -0.2%;
+  --ctr-glow-offset-y: 7.1%;
+  --ctr-glow-scale: 1.14;
 
   position: relative;
   width: 100%;
