@@ -2,64 +2,81 @@
  * Captain's Trophy Room — photo-calibrated trophy positions.
  *
  * The case background (assets/backgrounds/cabin.jpg) has 5 real display
- * bays with their own shelf ledge and spotlight. A marathon always shows
- * exactly 5 trophies now (no case carousel), one per bay, left to right.
+ * bays with their own arched recess and a two-tier brass plaque below it
+ * (a main plaque for the trophy's name, a smaller one for its unlock
+ * status). A marathon always shows exactly 5 trophies (no case
+ * carousel), one per bay, left to right.
  *
  * All measurements below came from sampling the image's pixels directly
- * at native resolution (brightest point of the brass shelf ledge, and
- * the wood divider pilasters between bays) — if the background photo is
- * ever replaced, these need re-measuring.
+ * at native resolution (arch dividers found by zooming into gridded
+ * crops and confirming each pilaster/plaque edge visually, not
+ * statistically guessed) — if the background photo is ever replaced,
+ * these need re-measuring.
  *
- * This regenerated photo (2nd generation, front-on with minimal camera
- * perspective) has noticeably shorter/wider bay openings than the first
- * one — bay height dropped from ~41% of the image height to ~26%, and
- * critically that height is now the SAME across all 5 bays (only their
- * widths still vary a bit). That means trophies can be sized off bay
- * HEIGHT alone (one shared size) instead of needing a different width
- * per bay — the previous photo needed per-bay width sizing specifically
- * because its bays varied in width but a trophy sized to fill that
- * width would have been far too short for the tall bay.
+ * Unlike the previous (2nd-generation) photo, this one's 5 bays are NOT
+ * uniform width — the middle bay is noticeably narrower than the rest —
+ * so trophy width is computed per-bay from its own divider span rather
+ * than shared across all five.
  */
 (function (global) {
   'use strict';
 
-  var IMAGE_NATURAL = { width: 1672, height: 941 };
+  var IMAGE_NATURAL = { width: 1376, height: 768 };
 
-  // 6 dividers bound the 5 bays (measured: pixel-luminance minima at the
-  // wood pilasters, verified visually by overlaying the lines on the
-  // photo). Bay top/shelf y measured at each bay's own center and
-  // averaged — see docs in git history for the per-bay raw values.
-  var DIVIDERS_X = [395, 670, 882, 1103, 1311, 1571];
-  var BAY_TOP_Y = 200;
-  var SHELF_Y = 443;
+  // 6 dividers bound the 5 arched bays.
+  var DIVIDERS_X = [420, 600, 790, 910, 1085, 1275];
+
+  // Arch apex (topmost point of the recess curve) and the shelf/floor
+  // line where the recess ends and the lower molding + plaques begin.
+  // Trophies rest on SHELF_Y; BAY_TOP_Y is just documentation of the
+  // recess's outer bound (trophies sized off bay WIDTH stay well clear
+  // of it — see TROPHY_WIDTH_RATIO below).
+  var BAY_TOP_Y = 170;
+  var SHELF_Y = 452;
 
   var BAY_COUNT = 5;
 
-  // Trophy height as a fraction of the bay's own (now-uniform) height,
-  // and its aspect ratio — width follows from height, not the other way
-  // around, since height is the dimension that's consistent across bays.
-  var TROPHY_HEIGHT_RATIO = 0.9; // of the bay's height
+  // Trophy width as a fraction of ITS OWN bay's width (bays vary in
+  // width — see DIVIDERS_X — so this can't be one shared size like the
+  // previous, uniform-bay photo). Height follows from width via the
+  // aspect ratio.
+  var TROPHY_WIDTH_RATIO = 0.68; // of the bay's own width
   var TROPHY_ASPECT_WH = 3 / 4;  // width = height * 3/4 (matches .ctr-trophy-case-visual)
+
+  function clampIndex(index) {
+    return Math.max(0, Math.min(BAY_COUNT - 1, index));
+  }
 
   function bayXFrac(i) {
     return ((DIVIDERS_X[i] + DIVIDERS_X[i + 1]) / 2) / IMAGE_NATURAL.width;
   }
 
-  var BAY_HEIGHT_FRAC = (SHELF_Y - BAY_TOP_Y) / IMAGE_NATURAL.height;
-  var TROPHY_HEIGHT_FRAC = BAY_HEIGHT_FRAC * TROPHY_HEIGHT_RATIO;
+  function bayWidthFrac(i) {
+    return (DIVIDERS_X[i + 1] - DIVIDERS_X[i]) / IMAGE_NATURAL.width;
+  }
 
-  // Nameplate rectangles — NOT derived/guessed like the values above.
-  // These are the exact carved-wood-panel rectangles the client measured
-  // by hand with the Nameplate Tuner artifact (drag/resize boxes over
-  // this same photo), given back as {left, top, width, height} percent
-  // of the full 1672x941 image. Re-run that tool and paste new numbers
-  // here if the background photo ever changes.
+  // The main (title/name) plaque — the larger brass rectangle under each
+  // bay. Hand-verified against the photo the same way every previous
+  // background's nameplate rectangles were: measured in image-pixel
+  // percent, not derived from the trophy's own layout.
   var NAMEPLATE_RECTS = [
-    { left: 25.84, top: 54.91, width: 10.83, height: 13.97 },
-    { left: 38.78, top: 54.50, width: 10.72, height: 14.17 },
-    { left: 52.09, top: 55.53, width: 11.06, height: 13.76 },
-    { left: 66.18, top: 55.94, width: 11.06, height: 13.76 },
-    { left: 79.94, top: 55.53, width: 11.53, height: 14.59 }
+    { left: 32.56, top: 62.24, width: 7.78, height: 13.67 },
+    { left: 45.42, top: 62.24, width: 7.63, height: 13.67 },
+    { left: 57.99, top: 62.24, width: 7.63, height: 13.67 },
+    { left: 71.08, top: 62.24, width: 7.41, height: 13.67 },
+    { left: 83.94, top: 62.24, width: 7.49, height: 13.67 }
+  ];
+
+  // The smaller status plaque directly below the main one — this photo
+  // (unlike the previous background) actually renders it as a separate
+  // physical plate, so unlock status gets its own panel instead of a
+  // footer line jammed into the main plaque.
+  var STATUS_RECTS = [
+    { left: 32.56, top: 77.73, width: 7.78, height: 3.65 },
+    { left: 45.42, top: 77.73, width: 7.63, height: 3.65 },
+    { left: 57.99, top: 77.73, width: 7.63, height: 3.65 },
+    { left: 71.08, top: 77.73, width: 7.41, height: 3.65 },
+    { left: 83.94, top: 77.73, width: 7.49, height: 3.65 }
   ];
 
   /**
@@ -79,11 +96,6 @@
       xToRoomPercent: function (xFrac) { return ((xFrac * scaledW - offsetX) / roomWidthPx) * 100; },
       yToRoomPercent: function (yFrac) { return ((yFrac * scaledH - offsetY) / roomHeightPx) * 100; },
       // For a SIZE (not a position) — no offset subtraction needed.
-      heightFracToWidthPercent: function (hFrac) {
-        var heightPx = hFrac * scaledH;
-        var widthPx = heightPx * TROPHY_ASPECT_WH;
-        return (widthPx / roomWidthPx) * 100;
-      },
       widthFracToRoomPercent: function (wFrac) {
         return (wFrac * scaledW / roomWidthPx) * 100;
       }
@@ -93,38 +105,38 @@
   /**
    * {leftPercent, bottomPercent, widthPercent} for the trophy at bay
    * index i (0-4), against the room element's CURRENT rendered size.
-   * widthPercent is derived from the shared trophy HEIGHT (see file
-   * comment) via the aspect ratio, so it's the same for every bay.
+   * widthPercent comes from that bay's OWN width (see file comment) —
+   * narrower bays get proportionally narrower trophies.
    */
   function getSlotStyle(roomEl, index) {
     var rect = roomEl.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
-    var i = Math.max(0, Math.min(BAY_COUNT - 1, index));
+    var i = clampIndex(index);
     var mapper = coverMapper(rect.width, rect.height);
 
     return {
       leftPercent: mapper.xToRoomPercent(bayXFrac(i)),
       bottomPercent: 100 - mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height),
-      widthPercent: mapper.heightFracToWidthPercent(TROPHY_HEIGHT_FRAC)
+      widthPercent: mapper.widthFracToRoomPercent(bayWidthFrac(i) * TROPHY_WIDTH_RATIO)
     };
   }
 
   /**
-   * {leftPercent, topPercent, widthPercent, heightPercent} for nameplate
-   * i's hand-measured panel rectangle (see NAMEPLATE_RECTS), as a
-   * percentage of the ROOM — same cover-crop mapping as everything else
-   * here. ctr-view.js converts this to pixels relative to the trophy
-   * element itself (not used as a CSS percentage directly) because the
-   * nameplate is nested inside .ctr-trophy, whose own height is 0 —
-   * percentage sizing against a zero-height ancestor doesn't work, but
-   * pixel values anchored to the trophy's own measured position do.
+   * {leftPercent, topPercent, widthPercent, heightPercent} for plaque i's
+   * hand-measured panel rectangle, as a percentage of the ROOM — same
+   * cover-crop mapping as everything else here. ctr-view.js converts
+   * this to pixels relative to the trophy element itself (not used as a
+   * CSS percentage directly) because the panel is nested inside
+   * .ctr-trophy, whose own height is 0 — percentage sizing against a
+   * zero-height ancestor doesn't work, but pixel values anchored to the
+   * trophy's own measured position do.
    */
-  function getNameplateRect(roomEl, index) {
+  function rectForBay(rects, roomEl, index) {
     var rect = roomEl.getBoundingClientRect();
     if (!rect.width || !rect.height) return null;
-    var i = Math.max(0, Math.min(BAY_COUNT - 1, index));
+    var i = clampIndex(index);
     var mapper = coverMapper(rect.width, rect.height);
-    var r = NAMEPLATE_RECTS[i];
+    var r = rects[i];
 
     var leftFrac = r.left / 100;
     var topFrac = r.top / 100;
@@ -142,9 +154,18 @@
     };
   }
 
+  function getNameplateRect(roomEl, index) {
+    return rectForBay(NAMEPLATE_RECTS, roomEl, index);
+  }
+
+  function getStatusRect(roomEl, index) {
+    return rectForBay(STATUS_RECTS, roomEl, index);
+  }
+
   global.CtrLayout = {
     BAY_COUNT: BAY_COUNT,
     getSlotStyle: getSlotStyle,
-    getNameplateRect: getNameplateRect
+    getNameplateRect: getNameplateRect,
+    getStatusRect: getStatusRect
   };
 })(window);
