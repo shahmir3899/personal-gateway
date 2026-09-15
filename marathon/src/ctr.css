@@ -224,18 +224,26 @@
 
 /* The spotlight "turning on" effect: this background photo was
    generated with its recessed downlights deliberately unlit/neutral (so
-   CSS drives the on/off state instead of fighting baked-in lighting). A
-   warm glow fades in above the trophy on unlock, layered under the
-   artwork so it reads as light falling on the trophy rather than a flat
-   color change. */
+   CSS drives the on/off state instead of fighting baked-in lighting).
+   Positioned/sized in pixels by ctr-view.js to the bay's own FULL
+   recess rectangle — fixture to shelf (see ctr-layout.js getGlowRect) —
+   so the light appears to fall from the real downlight position, not
+   just hover near the trophy. left/top/right/height below are only the
+   pre-JS / mobile fallback (mobile has no per-bay photo coordinates —
+   see the flex-fallback comment further down — so it stays relative to
+   the trophy's own box there). z-index sits below the trophy artwork's
+   own layers (case-visual's backdrop/shadow/art) so it reads as light
+   in the recess behind the trophy, not on top of it. */
 .ctr-trophy-glow {
   position: absolute;
   top: -35%;
   left: -10%;
   right: -10%;
   height: 70%;
-  z-index: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(255, 214, 140, 0.55) 0%, rgba(255, 189, 92, 0.22) 40%, rgba(255, 189, 92, 0) 72%);
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 40% 20% at 50% 6%, rgba(255, 241, 214, 0.9) 0%, rgba(255, 241, 214, 0) 100%),
+    radial-gradient(ellipse 75% 65% at 50% 0%, rgba(255, 196, 110, 0.55) 0%, rgba(255, 176, 90, 0.22) 45%, rgba(255, 176, 90, 0) 78%);
   opacity: 0;
   transition: opacity 0.6s ease;
   pointer-events: none;
@@ -336,12 +344,11 @@
   align-items: center;
   gap: 1px;
   text-align: center;
-  background: linear-gradient(180deg, var(--ctr-wood-mid), var(--ctr-wood-dark));
-  border: 1px solid var(--ctr-gold);
-  border-radius: 4px;
-  /* A thin inset gold hairline just inside the outer border — reads as
-     an engraved brass plaque rather than a flat bordered box. */
-  box-shadow: inset 0 0 0 1px rgba(236, 208, 138, 0.25), 0 2px 4px rgba(0, 0, 0, 0.4);
+  /* No border/box — the text sits directly on the real engraved brass
+     plaque in the photo instead of a drawn-on box. Just enough of a
+     dark scrim for the text to stay legible against the plaque's own
+     brightness/reflections. */
+  background: rgba(8, 5, 2, 0.32);
   padding: 2% 6%;
   overflow: hidden;
   /* The measured panel is small — content is condensed to one or two
@@ -357,16 +364,18 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--ctr-gold-bright);
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 5px rgba(0, 0, 0, 0.6);
 }
 
 .ctr-nameplate-name {
   font-style: italic;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
 }
 
 .ctr-nameplate-check {
   color: #8fd19e;
   font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
 }
 
 .ctr-nameplate--locked {
@@ -391,13 +400,13 @@
   justify-content: center;
   text-align: center;
   white-space: nowrap;
-  background: linear-gradient(180deg, var(--ctr-wood-mid), var(--ctr-wood-dark));
-  border: 1px solid var(--ctr-gold);
-  border-radius: 3px;
-  box-shadow: inset 0 0 0 1px rgba(236, 208, 138, 0.2), 0 2px 3px rgba(0, 0, 0, 0.35);
+  /* No border/box, same as .ctr-nameplate — just enough scrim to keep
+     the text legible over the real brass status plate in the photo. */
+  background: rgba(8, 5, 2, 0.28);
+  color: var(--ctr-gold-bright);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 5px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   font-size: clamp(0.3rem, 0.52vw, 0.36rem);
-  opacity: 0.9;
 }
 
 .ctr-status-plate--locked {

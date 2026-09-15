@@ -162,10 +162,36 @@
     return rectForBay(STATUS_RECTS, roomEl, index);
   }
 
+  /**
+   * {leftPercent, topPercent, widthPercent, heightPercent} for the FULL
+   * arched recess of bay i (its own divider span, full BAY_TOP_Y to
+   * SHELF_Y height) — used to place the unlock "spotlight" glow so it
+   * lines up with the real downlight fixture at the top of the recess,
+   * not just the smaller trophy box inside it (which would leave the
+   * glow floating with no visible source).
+   */
+  function getGlowRect(roomEl, index) {
+    var rect = roomEl.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    var i = clampIndex(index);
+    var mapper = coverMapper(rect.width, rect.height);
+
+    var leftPercent = mapper.xToRoomPercent(DIVIDERS_X[i] / IMAGE_NATURAL.width);
+    var topPercent = mapper.yToRoomPercent(BAY_TOP_Y / IMAGE_NATURAL.height);
+
+    return {
+      leftPercent: leftPercent,
+      topPercent: topPercent,
+      widthPercent: mapper.xToRoomPercent(DIVIDERS_X[i + 1] / IMAGE_NATURAL.width) - leftPercent,
+      heightPercent: mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height) - topPercent
+    };
+  }
+
   global.CtrLayout = {
     BAY_COUNT: BAY_COUNT,
     getSlotStyle: getSlotStyle,
     getNameplateRect: getNameplateRect,
-    getStatusRect: getStatusRect
+    getStatusRect: getStatusRect,
+    getGlowRect: getGlowRect
   };
 })(window);

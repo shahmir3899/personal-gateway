@@ -73,7 +73,7 @@
         el.style.left = '';
         el.style.bottom = '';
         el.style.width = '';
-        ['.ctr-nameplate', '.ctr-status-plate'].forEach(function (sel) {
+        ['.ctr-nameplate', '.ctr-status-plate', '.ctr-trophy-glow'].forEach(function (sel) {
           var panel = el.querySelector(sel);
           if (panel) {
             panel.style.left = '';
@@ -108,6 +108,10 @@
       var trophyRect = el.getBoundingClientRect();
       positionPanel(el, '.ctr-nameplate', CtrLayout.getNameplateRect(roomEl, i), trophyRect, roomRect);
       positionPanel(el, '.ctr-status-plate', CtrLayout.getStatusRect(roomEl, i), trophyRect, roomRect);
+      // The glow spans the bay's own FULL recess (fixture to shelf), not
+      // just the trophy's own box, so it lines up with the real downlight
+      // position above it — see ctr-layout.js getGlowRect.
+      positionPanel(el, '.ctr-trophy-glow', CtrLayout.getGlowRect(roomEl, i), trophyRect, roomRect);
     });
   }
 
@@ -183,6 +187,12 @@
 
     return (
       '<div class="ctr-trophy ' + lockedClass + (sizeClass ? ' ' + sizeClass : '') + '" data-trophy-id="' + trophy.id + '">' +
+        // Spans the bay's own FULL recess (fixture to shelf) — sibling of
+        // .ctr-trophy-case-visual, not nested inside it, because it's
+        // wider/taller than the trophy's own box (see positionTrophyElements
+        // / ctr-layout.js getGlowRect). Dark/invisible by default; fades
+        // in on unlock via the outer --unlocked class.
+        '<div class="ctr-trophy-glow" aria-hidden="true"></div>' +
         '<div class="ctr-trophy-case-visual">' +
           // Approximates the bay's own lit panel behind the trophy —
           // sized relative to the trophy's own box (bigger than it, not
@@ -191,7 +201,6 @@
           // the generic flex fallback (mobile). Dark by default; faded
           // to invisible when unlocked via the outer --unlocked class.
           '<div class="ctr-trophy-backdrop"></div>' +
-          '<div class="ctr-trophy-glow" aria-hidden="true"></div>' +
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +
