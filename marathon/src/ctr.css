@@ -348,7 +348,7 @@
      plaque in the photo instead of a drawn-on box. Just enough of a
      dark scrim for the text to stay legible against the plaque's own
      brightness/reflections. */
-  background: rgba(8, 5, 2, 0.32);
+  background: rgba(8, 5, 2, 0.48);
   padding: 2% 6%;
   overflow: hidden;
   /* The measured panel is small — content is condensed to one or two
@@ -402,7 +402,7 @@
   white-space: nowrap;
   /* No border/box, same as .ctr-nameplate — just enough scrim to keep
      the text legible over the real brass status plate in the photo. */
-  background: rgba(8, 5, 2, 0.28);
+  background: rgba(8, 5, 2, 0.44);
   color: var(--ctr-gold-bright);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 5px rgba(0, 0, 0, 0.6);
   overflow: hidden;
