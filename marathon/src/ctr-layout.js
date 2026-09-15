@@ -84,16 +84,15 @@
   ];
 
   // The title plate above each arch, in the crown molding — new in this
-  // photo generation. These are Claude's own pixel-measured estimate
-  // (the plates are photographed at a slight perspective tilt, so a
-  // straight rectangle is an approximation) — re-tune with the Nameplate
-  // Tuner artifact if they don't line up closely enough.
+  // photo generation. Client-measured with the Nameplate Tuner artifact
+  // (superseding Claude's own initial pixel estimate, which was off by
+  // a few percent given the plates' slight perspective tilt).
   var TOP_RECTS = [
-    { left: 32.56, top: 9.90, width: 10.54, height: 4.17 },
-    { left: 44.91, top: 10.42, width: 10.32, height: 4.17 },
-    { left: 57.63, top: 10.94, width: 8.14, height: 4.43 },
-    { left: 68.31, top: 10.94, width: 9.81, height: 4.17 },
-    { left: 81.40, top: 10.94, width: 11.63, height: 3.91 }
+    { left: 31.51, top: 10.73, width: 10.30, height: 3.96 },
+    { left: 43.97, top: 10.42, width: 10.32, height: 4.17 },
+    { left: 56.23, top: 9.48, width: 10.11, height: 3.81 },
+    { left: 69.12, top: 8.23, width: 10.39, height: 4.59 },
+    { left: 81.86, top: 7.81, width: 11.63, height: 3.91 }
   ];
 
   /**
