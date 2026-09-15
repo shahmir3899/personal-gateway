@@ -178,7 +178,10 @@
         '<div class="ctr-nameplate-title">' + escapeHtml(trophy.name) + '</div>' +
         '<div class="ctr-nameplate-name">' + escapeHtml(viewModel.displayName || '') + '</div>' +
         '<div class="ctr-nameplate-sub">' + formatDate(trophy.unlockedAt) + '</div>' +
-        '<div class="ctr-nameplate-sub">Day ' + trophy.daysSinceFirstTrophy + ' &middot; Split ' + trophy.splitDaysSincePrevious + '</div>' +
+        '<div class="ctr-nameplate-stats">' +
+          '<span class="ctr-nameplate-stat"><strong>' + trophy.daysSinceFirstTrophy + '</strong>Day</span>' +
+          '<span class="ctr-nameplate-stat"><strong>' + trophy.splitDaysSincePrevious + '</strong>Split</span>' +
+        '</div>' +
       '</div>'
     );
   }
