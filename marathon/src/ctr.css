@@ -12,6 +12,10 @@
   --ctr-wood-dark: #2a1a10;
   --ctr-wood-mid: #4a2f1c;
   --ctr-glass-tint: rgba(255, 255, 255, 0.08);
+  /* How dark the scrim behind nameplate/status text is, over the real
+     photographed brass plaque — tuned live in the Plaque Style Tuner
+     artifact, then baked back in here as the final number. */
+  --ctr-plate-scrim: 0.48;
 
   position: relative;
   width: 100%;
@@ -348,7 +352,7 @@
      plaque in the photo instead of a drawn-on box. Just enough of a
      dark scrim for the text to stay legible against the plaque's own
      brightness/reflections. */
-  background: rgba(8, 5, 2, 0.48);
+  background: rgba(8, 5, 2, var(--ctr-plate-scrim));
   padding: 2% 6%;
   overflow: hidden;
   /* The measured panel is small — content is condensed to one or two
@@ -402,7 +406,7 @@
   white-space: nowrap;
   /* No border/box, same as .ctr-nameplate — just enough scrim to keep
      the text legible over the real brass status plate in the photo. */
-  background: rgba(8, 5, 2, 0.44);
+  background: rgba(8, 5, 2, var(--ctr-plate-scrim));
   color: var(--ctr-gold-bright);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 5px rgba(0, 0, 0, 0.6);
   overflow: hidden;
