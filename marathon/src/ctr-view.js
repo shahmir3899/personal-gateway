@@ -219,13 +219,6 @@
         renderGlow(trophy.id) +
         renderTopPlate(trophy) +
         '<div class="ctr-trophy-case-visual">' +
-          // Approximates the bay's own lit panel behind the trophy —
-          // sized relative to the trophy's own box (bigger than it, not
-          // a separate photo-coordinate rectangle), so it automatically
-          // follows the trophy whether it's shelf-locked (desktop) or in
-          // the generic flex fallback (mobile). Dark by default; faded
-          // to invisible when unlocked via the outer --unlocked class.
-          '<div class="ctr-trophy-backdrop"></div>' +
           '<div class="ctr-trophy-shadow"></div>' +
           '<img class="ctr-trophy-art" src="' + escapeUrl(artSrc) + '" alt="' + escapeHtml(trophy.name) + '" data-fallback-name="' + escapeHtml(trophy.name) + '" />' +
           '<div class="ctr-trophy-art-fallback" hidden>' + escapeHtml(trophy.name) + '</div>' +

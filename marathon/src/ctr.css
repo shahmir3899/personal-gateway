@@ -211,29 +211,6 @@
   inset: 0;
 }
 
-/* Approximates the bay's own lit panel behind the trophy — sized
-   relative to the trophy's own box (wider/taller than it), not a
-   separate photo-coordinate rectangle, so it automatically follows the
-   trophy whether it's shelf-locked (desktop) or in the generic flex
-   fallback (mobile). An earlier version used absolute bay coordinates
-   for this and it broke on mobile: the dimmed rectangle stayed at its
-   photo position while the trophy scrolled past it in the flex layout. */
-.ctr-trophy-backdrop {
-  position: absolute;
-  top: -15%;
-  left: -20%;
-  right: -20%;
-  bottom: 0;
-  z-index: 0;
-  background: rgba(5, 3, 1, 0.72);
-  border-radius: 2px;
-  transition: opacity 0.4s ease;
-}
-
-.ctr-trophy--unlocked .ctr-trophy-backdrop {
-  opacity: 0;
-}
-
 /* The spotlight "turning on" effect: this background photo was
    generated with its recessed downlights deliberately unlit/neutral (so
    CSS drives the on/off state instead of fighting baked-in lighting).
