@@ -175,32 +175,25 @@
   color: var(--ctr-gold);
 }
 
-/* Trophies are pinned to their photo-calibrated bay (ctr-layout.js sets
-   left/bottom/width inline, computed from the actual shelf-ledge and bay
-   pixel positions measured in cabin.jpg). .ctr-trophy itself is a
-   zero-height anchor at the shelf line: the visual sits above it
-   (bottom: 0, growing up) and the nameplate sits just below it (top: 0,
-   growing down) — that's what makes the trophy base land exactly on the
-   photographed shelf instead of floating in generic flex-centered space. */
+/* Each trophy is pinned to its own hand-tuned box (ctr-layout.js
+   TROPHY_RECTS, set inline in pixels by ctr-view.js — see the Trophy
+   Slot Tuner artifact). left/bottom/width/transform below are only the
+   pre-JS / no-JS fallback; .ctr-trophy-case-visual fills the trophy box
+   exactly (inset: 0) rather than deriving its own height from an
+   aspect-ratio, since height is now independently tunable per trophy. */
 .ctr-trophy {
   position: absolute;
   left: 50%;
   bottom: 20%;
   width: 13.4%;
+  height: 17.9%;
   transform: translateX(-50%);
   z-index: 1;
 }
 
 .ctr-trophy-case-visual {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* Taller than wide (not square) — the bay openings are tall, and most
-     of these trophy shapes (spire, wave, anchor) are themselves taller
-     than wide, so a squarer box was leaving space unused above the
-     trophy instead of making it look bigger. */
-  aspect-ratio: 3 / 4;
+  inset: 0;
 }
 
 /* Approximates the bay's own lit panel behind the trophy — sized
@@ -580,10 +573,12 @@
 .ctr-zoom-body .ctr-trophy--zoomed {
   position: static;
   left: auto;
+  top: auto;
   bottom: auto;
   transform: none;
   max-width: none;
   width: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -591,10 +586,15 @@
 
 .ctr-zoom-body .ctr-trophy--zoomed .ctr-trophy-case-visual {
   position: relative;
+  inset: auto;
   left: auto;
   right: auto;
   bottom: auto;
   width: 100%;
+  /* No JS-set pixel height here (static/natural flow, not the
+     photo-calibrated room) — same aspect-ratio the in-room box used to
+     derive its height from, kept just for this fallback context. */
+  aspect-ratio: 3 / 4;
   margin-bottom: 4%;
 }
 
@@ -689,6 +689,7 @@
   .ctr-trophy {
     position: static;
     left: auto;
+    top: auto;
     bottom: auto;
     transform: none;
     display: flex;
@@ -696,14 +697,19 @@
     align-items: center;
     flex: 0 0 clamp(76px, 22vw, 140px);
     width: auto;
+    height: auto;
   }
 
   .ctr-trophy-case-visual {
     position: relative;
+    inset: auto;
     left: auto;
     right: auto;
     bottom: auto;
     width: 100%;
+    /* No JS-set pixel height here (static/natural flow) — same
+       aspect-ratio the in-room box used to derive its height from. */
+    aspect-ratio: 3 / 4;
     margin-bottom: 6%;
   }
 

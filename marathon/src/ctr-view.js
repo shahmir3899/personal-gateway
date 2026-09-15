@@ -79,8 +79,11 @@
     if (window.matchMedia && window.matchMedia('(max-width: 560px)').matches) {
       trophyEls.forEach(function (el) {
         el.style.left = '';
+        el.style.top = '';
         el.style.bottom = '';
         el.style.width = '';
+        el.style.height = '';
+        el.style.transform = '';
         ['.ctr-nameplate', '.ctr-status-plate', '.ctr-trophy-glow', '.ctr-top-plate'].forEach(function (sel) {
           var panel = el.querySelector(sel);
           if (panel) {
@@ -98,11 +101,20 @@
     var roomRect = roomEl.getBoundingClientRect();
 
     trophyEls.forEach(function (el, i) {
+      // The trophy's own box is now a hand-tuned rect exactly like the
+      // plates (see ctr-layout.js TROPHY_RECTS / the Trophy Slot Tuner
+      // artifact) — left/top/width/height in pixels relative to the
+      // room, not the old left/bottom/width-as-percent-of-room +
+      // aspect-ratio-derived-height approach. That's what makes
+      // independent per-trophy resizing possible.
       var slot = CtrLayout.getSlotStyle(roomEl, i);
       if (!slot) return;
-      el.style.left = slot.leftPercent + '%';
-      el.style.bottom = slot.bottomPercent + '%';
-      el.style.width = slot.widthPercent + '%';
+      el.style.transform = 'none';
+      el.style.left = (slot.leftPercent / 100 * roomRect.width) + 'px';
+      el.style.top = (slot.topPercent / 100 * roomRect.height) + 'px';
+      el.style.width = (slot.widthPercent / 100 * roomRect.width) + 'px';
+      el.style.height = (slot.heightPercent / 100 * roomRect.height) + 'px';
+      el.style.bottom = '';
 
       // Both plaques' rectangles were hand-measured against the actual
       // photo (see ctr-layout.js NAMEPLATE_RECTS/STATUS_RECTS / the

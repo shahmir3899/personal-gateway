@@ -18,9 +18,10 @@
  * overlaying the old rects on the new photo before reusing them — only
  * TOP_RECTS is newly measured.
  *
- * This photo's 5 bays are NOT uniform width — the middle bay is
- * noticeably narrower than the rest — so trophy width is computed
- * per-bay from its own divider span rather than shared across all five.
+ * Each trophy's own bounding box (TROPHY_RECTS) is hand-tunable the
+ * same way as every plate here — see the Trophy Slot Tuner artifact —
+ * rather than computed from a shared width-ratio formula, since this
+ * photo's 5 bays aren't uniform width or height to begin with.
  */
 (function (global) {
   'use strict';
@@ -32,31 +33,31 @@
 
   // Arch apex (topmost point of the recess curve) and the shelf/floor
   // line where the recess ends and the lower molding + plaques begin.
-  // Trophies rest on SHELF_Y; BAY_TOP_Y is just documentation of the
-  // recess's outer bound (trophies sized off bay WIDTH stay well clear
-  // of it — see TROPHY_WIDTH_RATIO below).
+  // Trophies are hand-positioned within this range (see TROPHY_RECTS);
+  // BAY_TOP_Y/SHELF_Y are also used directly to size the unlock glow to
+  // the recess's own bounds (see getGlowRect).
   var BAY_TOP_Y = 170;
   var SHELF_Y = 452;
 
   var BAY_COUNT = 5;
 
-  // Trophy width as a fraction of ITS OWN bay's width (bays vary in
-  // width — see DIVIDERS_X — so this can't be one shared size like the
-  // previous, uniform-bay photo). Height follows from width via the
-  // aspect ratio.
-  var TROPHY_WIDTH_RATIO = 0.82; // of the bay's own width
-  var TROPHY_ASPECT_WH = 3 / 4;  // width = height * 3/4 (matches .ctr-trophy-case-visual)
+  // Each trophy's own bounding box, hand-tunable exactly like the
+  // plaques below — {left, top, width, height} as a percent of the full
+  // image, independent per bay (no more per-bay-width-ratio formula).
+  // Defaults here were computed from the old formula (bay width * 0.82,
+  // height = width * 4/3, bottom-anchored at SHELF_Y) as a starting
+  // point; re-tune with the Trophy Slot Tuner artifact and paste the
+  // result back in here.
+  var TROPHY_RECTS = [
+    { left: 31.70, top: 33.23, width: 10.73, height: 25.63 },
+    { left: 44.85, top: 31.81, width: 11.32, height: 27.05 },
+    { left: 58.20, top: 41.77, width: 7.15, height: 17.08 },
+    { left: 67.28, top: 33.95, width: 10.43, height: 24.91 },
+    { left: 80.10, top: 31.81, width: 11.32, height: 27.05 }
+  ];
 
   function clampIndex(index) {
     return Math.max(0, Math.min(BAY_COUNT - 1, index));
-  }
-
-  function bayXFrac(i) {
-    return ((DIVIDERS_X[i] + DIVIDERS_X[i + 1]) / 2) / IMAGE_NATURAL.width;
-  }
-
-  function bayWidthFrac(i) {
-    return (DIVIDERS_X[i + 1] - DIVIDERS_X[i]) / IMAGE_NATURAL.width;
   }
 
   // The main (title/name) plaque — the larger brass rectangle under each
@@ -110,31 +111,21 @@
 
     return {
       xToRoomPercent: function (xFrac) { return ((xFrac * scaledW - offsetX) / roomWidthPx) * 100; },
-      yToRoomPercent: function (yFrac) { return ((yFrac * scaledH - offsetY) / roomHeightPx) * 100; },
-      // For a SIZE (not a position) — no offset subtraction needed.
-      widthFracToRoomPercent: function (wFrac) {
-        return (wFrac * scaledW / roomWidthPx) * 100;
-      }
+      yToRoomPercent: function (yFrac) { return ((yFrac * scaledH - offsetY) / roomHeightPx) * 100; }
     };
   }
 
   /**
-   * {leftPercent, bottomPercent, widthPercent} for the trophy at bay
-   * index i (0-4), against the room element's CURRENT rendered size.
-   * widthPercent comes from that bay's OWN width (see file comment) —
-   * narrower bays get proportionally narrower trophies.
+   * {leftPercent, topPercent, widthPercent, heightPercent} for trophy i's
+   * hand-tuned bounding box (see TROPHY_RECTS), as a percentage of the
+   * ROOM — same shape/mapping as getNameplateRect etc. below. Trophy i
+   * is positioned/sized in pixels from this exactly like every plate
+   * (see positionTrophyElements in ctr-view.js) instead of the old
+   * left/bottom/width-only CSS-percent + aspect-ratio approach, since
+   * height is now independently tunable too.
    */
   function getSlotStyle(roomEl, index) {
-    var rect = roomEl.getBoundingClientRect();
-    if (!rect.width || !rect.height) return null;
-    var i = clampIndex(index);
-    var mapper = coverMapper(rect.width, rect.height);
-
-    return {
-      leftPercent: mapper.xToRoomPercent(bayXFrac(i)),
-      bottomPercent: 100 - mapper.yToRoomPercent(SHELF_Y / IMAGE_NATURAL.height),
-      widthPercent: mapper.widthFracToRoomPercent(bayWidthFrac(i) * TROPHY_WIDTH_RATIO)
-    };
+    return rectForBay(TROPHY_RECTS, roomEl, index);
   }
 
   /**
