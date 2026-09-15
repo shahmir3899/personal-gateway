@@ -245,32 +245,41 @@
     return '<div class="ctr-top-plate">' + escapeHtml(trophy.name) + ' Trophy</div>';
   }
 
-  // The unlock "spotlight": a vector cone (SVG polygon), not a blurry
-  // CSS radial-gradient blob — narrow near the real ceiling fixture,
-  // widening as it falls toward the trophy, so it reads as a beam of
-  // light with a direction and a source rather than an undirected glow.
-  // Shape is fixed (a real spotlight's taper doesn't change bay to bay);
-  // color/blur/opacity/overall strength stay tunable via the
-  // --ctr-glow-* CSS variables on .ctr-widget. gradientUnits/ids are
-  // suffixed with the trophy's own id so multiple trophies on screen at
-  // once (in-room + a zoomed one) never collide over the same <defs> id.
+  // The unlock "spotlight": a volumetric vector beam (SVG), not a
+  // blurry CSS radial-gradient blob — a cone from the real ceiling
+  // fixture down to a "floor contact" ellipse where the light actually
+  // lands, blended with mix-blend-mode: screen so it lightens the wood
+  // underneath instead of just painting a flat shape over it. Shape is
+  // fixed (a real spotlight's taper doesn't change bay to bay); color/
+  // blur/opacity/overall strength stay tunable via the --ctr-glow-* CSS
+  // variables on .ctr-widget. gradientUnits/filter ids are suffixed
+  // with the trophy's own id so multiple trophies on screen at once
+  // (in-room + a zoomed one) never collide over the same <defs> id.
   function renderGlow(trophyId) {
     var uid = escapeHtml(trophyId);
     return (
       '<div class="ctr-trophy-glow" aria-hidden="true">' +
         '<svg class="ctr-glow-svg" viewBox="0 0 100 100" preserveAspectRatio="none">' +
           '<defs>' +
+            '<filter id="ctr-glow-blur-' + uid + '" x="-60%" y="-60%" width="220%" height="220%">' +
+              '<feGaussianBlur stdDeviation="2.2"/>' +
+            '</filter>' +
             '<linearGradient id="ctr-glow-beam-' + uid + '" x1="0" y1="0" x2="0" y2="1">' +
               '<stop offset="0%" style="stop-color:#fff3d6; stop-opacity: var(--ctr-glow-hotspot-opacity)"/>' +
-              '<stop offset="55%" style="stop-color:#ffbb66; stop-opacity: calc(var(--ctr-glow-wash-opacity) * 0.6)"/>' +
+              '<stop offset="60%" style="stop-color:#ffbb66; stop-opacity: calc(var(--ctr-glow-wash-opacity) * 0.6)"/>' +
               '<stop offset="100%" style="stop-color:#ffbb66; stop-opacity: 0"/>' +
             '</linearGradient>' +
             '<radialGradient id="ctr-glow-core-' + uid + '" cx="50%" cy="0%" r="70%">' +
               '<stop offset="0%" style="stop-color:#fff8e6; stop-opacity: var(--ctr-glow-hotspot-opacity)"/>' +
               '<stop offset="100%" style="stop-color:#fff8e6; stop-opacity: 0"/>' +
             '</radialGradient>' +
+            '<radialGradient id="ctr-glow-floor-' + uid + '" cx="50%" cy="50%" r="50%">' +
+              '<stop offset="0%" style="stop-color:#ffbb66; stop-opacity: calc(var(--ctr-glow-wash-opacity) * 0.9)"/>' +
+              '<stop offset="100%" style="stop-color:#ffbb66; stop-opacity: 0"/>' +
+            '</radialGradient>' +
           '</defs>' +
-          '<polygon points="47,2 53,2 74,90 26,90" fill="url(#ctr-glow-beam-' + uid + ')"/>' +
+          '<polygon class="ctr-glow-beam" points="50,2 25,88 75,88" fill="url(#ctr-glow-beam-' + uid + ')" filter="url(#ctr-glow-blur-' + uid + ')"/>' +
+          '<ellipse class="ctr-glow-floor" cx="50" cy="86" rx="27" ry="7" fill="url(#ctr-glow-floor-' + uid + ')" filter="url(#ctr-glow-blur-' + uid + ')"/>' +
           '<ellipse cx="50" cy="4" rx="11" ry="6" fill="url(#ctr-glow-core-' + uid + ')"/>' +
         '</svg>' +
       '</div>'

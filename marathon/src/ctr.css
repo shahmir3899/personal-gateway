@@ -258,15 +258,25 @@
 }
 
 /* The vector cone itself (see renderGlow in ctr-view.js) — a polygon
-   tapering from a point near the real ceiling fixture down to a spread
-   at the trophy, plus a small bright core at the source. Blurred as a
-   whole (not per-shape SVG filters — cheaper and softens the polygon's
-   otherwise hard edges into a believable beam) rather than left crisp. */
+   tapering from a point near the real ceiling fixture down to a "floor
+   contact" ellipse where the beam actually lands, plus a small bright
+   core at the source. Each shape has its own SVG feGaussianBlur (the
+   volumetric part — softens the polygon's hard edges into a believable
+   beam); --ctr-glow-blur adds an extra CSS-level blur on top of that,
+   for overall softness that stays tunable without touching the SVG. */
 .ctr-glow-svg {
   display: block;
   width: 100%;
   height: 100%;
   filter: blur(var(--ctr-glow-blur));
+}
+
+/* screen blend mode LIGHTENS what's underneath instead of just painting
+   a flat warm shape over it — that's what makes the beam read as light
+   falling on the wood grain rather than a sticker laid on top of it. */
+.ctr-glow-beam,
+.ctr-glow-floor {
+  mix-blend-mode: screen;
 }
 
 /* A small wooden plinth under the trophy — the real photo's recess
