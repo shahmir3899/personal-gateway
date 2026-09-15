@@ -417,7 +417,11 @@
   color: #1a1207;
   text-shadow: 0 1px 0 rgba(255, 244, 214, 0.4);
   overflow: hidden;
-  font-size: clamp(0.3rem, 0.52vw, 0.36rem);
+  /* In-room content is now a single icon glyph (see renderStatusPlate) —
+     a full date string at any font size small enough to fit this real
+     ~20px-tall panel just rendered as an illegible smudge. A lone icon
+     reads fine much bigger. */
+  font-size: clamp(0.55rem, 1.3vw, 0.85rem);
 }
 
 

@@ -207,7 +207,7 @@
           (trophy.isUnlocked ? '' : '<div class="ctr-trophy-glass"></div><div class="ctr-trophy-lock" aria-hidden="true">&#128274;</div>') +
         '</div>' +
         renderNameplate(trophy, viewModel) +
-        renderStatusPlate(trophy, viewModel) +
+        renderStatusPlate(trophy, viewModel, sizeClass === 'ctr-trophy--zoomed') +
       '</div>'
     );
   }
@@ -234,11 +234,32 @@
     );
   }
 
-  function renderStatusPlate(trophy, viewModel) {
+  // The in-room status plate is genuinely tiny in real pixels (the
+  // client's own measured panel — see ctr-layout.js STATUS_RECTS — is
+  // only ~20px tall at typical widget width). A full date string there
+  // doesn't get more legible by shrinking the font to fit; it just
+  // renders as a blurry, illegible smudge that reads as "solid black".
+  // So the in-room version drops to a single icon (with the detail in a
+  // title tooltip); the zoom view has real room, so it keeps the full text.
+  function renderStatusPlate(trophy, viewModel, isZoomed) {
     if (!trophy.isUnlocked) {
+      if (!isZoomed) {
+        return (
+          '<div class="ctr-status-plate ctr-status-plate--locked" title="' + trophy.requiredReferrals + ' referrals to unlock">' +
+            '<span aria-hidden="true">&#128274;</span>' +
+          '</div>'
+        );
+      }
       return (
         '<div class="ctr-status-plate ctr-status-plate--locked">' +
           '<span aria-hidden="true">&#128274;</span> ' + trophy.requiredReferrals + ' referrals' +
+        '</div>'
+      );
+    }
+    if (!isZoomed) {
+      return (
+        '<div class="ctr-status-plate" title="Unlocked ' + formatDate(trophy.unlockedAt) + '">' +
+          '<span class="ctr-nameplate-check" aria-hidden="true">&#10003;</span>' +
         '</div>'
       );
     }
