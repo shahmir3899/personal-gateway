@@ -45,6 +45,11 @@ from werkzeug.wrappers import Request, Response
 KODERKIDS_UPSTREAM_URL = os.environ.get("KODERKIDS_UPSTREAM_URL", "http://127.0.0.1:8001")
 EDUCATIONAI_UPSTREAM_URL = os.environ.get("EDUCATIONAI_UPSTREAM_URL", "http://127.0.0.1:8002")
 
+# Seconds the gateway waits for a backend before answering 502. Was a hard-coded 60,
+# which cut off long requests (e.g. koderkids bulk report ZIPs) while Django kept working.
+# Keep this <= GUNICORN_TIMEOUT (start.sh) or the gateway worker is killed first.
+UPSTREAM_TIMEOUT = int(os.environ.get("UPSTREAM_TIMEOUT", "300"))
+
 # Headers that must not be blindly forwarded/copied between hops (RFC 7230 6.1).
 _HOP_BY_HOP_HEADERS = {
     "connection",
@@ -87,7 +92,7 @@ def make_proxy_app(upstream_url):
         body = request.get_data(cache=False)
 
         connection_cls = http.client.HTTPSConnection if is_https else http.client.HTTPConnection
-        conn = connection_cls(host, port, timeout=60)
+        conn = connection_cls(host, port, timeout=UPSTREAM_TIMEOUT)
         try:
             conn.request(request.method, target_path, body=body, headers=forward_headers)
             upstream_response = conn.getresponse()

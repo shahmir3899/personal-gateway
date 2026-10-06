@@ -16,7 +16,7 @@ set -uo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-GUNICORN_TIMEOUT="${GUNICORN_TIMEOUT:-120}"
+GUNICORN_TIMEOUT="${GUNICORN_TIMEOUT:-300}"
 
 KODERKIDS_DIR="$ROOT_DIR/school-management-system/backend"
 KODERKIDS_VENV_GUNICORN="$ROOT_DIR/school-management-system/.venv/bin/gunicorn"
