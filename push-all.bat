@@ -1,51 +1,52 @@
 @echo off
 setlocal enabledelayedexpansion
 
-call :process EducationAI
-call :process school-management-system
+REM Commits (if there is anything to commit) and pushes everything, submodules first,
+REM then the main repo so Render never points at a commit GitHub doesn't have.
+for /f "delims=" %%t in ('powershell -nop -c "Get-Date -Format yyyy-MM-dd_HH:mm"') do set "stamp=%%t"
 
-echo ===============================
-echo   Push main repo (personal)
-echo ===============================
-git add .
-set "msg="
-set /p msg="Enter commit message for main repo (leave blank to skip): "
-if not "!msg!"=="" (
-    git commit -m "!msg!"
-    git push
-) else (
-    echo Skipped main repo commit.
-)
+call :process EducationAI
+if errorlevel 1 goto :failed
+call :process school-management-system
+if errorlevel 1 goto :failed
+call :process .
+if errorlevel 1 goto :failed
 
 echo ===============================
 echo   Done.
 echo ===============================
 pause
-exit /b
+exit /b 0
+
+:failed
+echo.
+echo STOPPED: a push failed. Nothing after it was pushed.
+pause
+exit /b 1
 
 :process
 echo ===============================
-echo   Push %1
+echo   %1
 echo ===============================
 pushd %1
 for /f "delims=" %%b in ('git branch --show-current') do set "branch=%%b"
 echo Current branch: !branch!
 git add .
+git status --short
 set "msg="
-set /p msg="Enter commit message for %1 (leave blank to skip): "
-if not "!msg!"=="" (
+git diff --cached --quiet
+if errorlevel 1 (
+    set /p msg="Commit message for %1 (blank = Update !stamp!): "
+    if "!msg!"=="" set "msg=Update !stamp!"
     git commit -m "!msg!"
-    REM -u so a new branch gets an upstream; a plain push fails silently on one
-    git push -u origin HEAD
-    if errorlevel 1 (
-        echo.
-        echo PUSH FAILED for %1 - fix this before pushing the main repo, or Render will point at a commit GitHub does not have.
-        popd
-        pause
-        exit /b 1
-    )
 ) else (
-    echo Skipped %1 commit.
+    echo Nothing new to commit.
+)
+REM -u so a new branch gets an upstream; a plain push fails silently on one
+git push -u origin HEAD
+if errorlevel 1 (
+    popd
+    exit /b 1
 )
 if /i not "!branch!"=="main" if /i not "!branch!"=="master" (
     set "merge="
@@ -61,4 +62,4 @@ if /i not "!branch!"=="main" if /i not "!branch!"=="master" (
     )
 )
 popd
-exit /b
+exit /b 0
